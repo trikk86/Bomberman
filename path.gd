@@ -9,4 +9,3 @@ func _ready():
 func _fixed_process(delta):
 	set_unit_offset(location)
 	location += speed
-	
