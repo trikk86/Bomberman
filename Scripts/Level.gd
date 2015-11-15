@@ -1,7 +1,7 @@
-extends Area2D
+extends Node2D
 
-var gridX = 16
-var gridY = 16
+var gridX = 4
+var gridY = 4
 
 export var Time = 240
 
@@ -17,8 +17,8 @@ func _ready():
 	var enemyNode = get_node("Path2D/PathFollow2D/KinematicBody2D")
 	enemies.append(enemyNode)
 	
-	get_node("AnimationPlayer").play("Start")
-	get_node("Player/AnimationPlayer").play("GoDown")
+	#get_node("AnimationPlayer").play("Start")
+	#get_node("Player/MovementPlayer").play("GoDown")
 	
 	var timer = get_node("Timer")
 	timer.set_wait_time(Time)
@@ -31,16 +31,25 @@ func _fixed_process(delta):
 	if(get_node("/root/Globals").playerLifes == 0):
 		get_tree().set_pause(true)
 		get_node("/root/ScreenLoader").goto_scene("res://Menu.scn")
-
-		
-		
-func AddBomb(position):
+	for bomb in bombsArray:
+		if(!bomb.get_node("Area2D").overlaps_body(get_node("Player"))):
+			bomb.get_node("StaticBody2D").remove_collision_exception_with(get_node("Player"))
+	
+func AddBomb():
 	bombIterator += 1
 	var bomb = bombs.instance()
 	var playerNode = get_node("Player")
 	playerNode.add_collision_exception_with(bomb)
+	var position = playerNode.get_pos()
 	bomb.set_name(str("bomb", bombIterator))
-	bomb.set_pos(position)
+	var bombTileX = (int(position.x + 31.339235))/5
+	var bombTileY = (int(position.y + 22.384819))/5
+
+	print(str(position.x, ":", bombTileX, ",", position.y, ":", bombTileY))
+	var newPosition = Vector2()
+	newPosition.x = bombTileX *5 - 26.883186
+	newPosition.y = bombTileY *5 - 22.403492
+	bomb.set_pos(newPosition)
 	bomb.get_node("StaticBody2D").add_collision_exception_with(get_node("Player"))
 
 	
@@ -48,7 +57,6 @@ func AddBomb(position):
 	bombsArray.append(bomb)
 	var bombArray = Array()
 	bombArray.append(bomb)
-	bomb.get_node("Area2D").connect("body_exit", self, "RemovePlayerCollision", bombArray)
 	var timer = Timer.new()
 	timer.set_wait_time(5)
 	timer.set_one_shot(true)
@@ -57,11 +65,8 @@ func AddBomb(position):
 	timer.start()
 
 func BombExplode(bombs):
+	bombsArray.remove(bombsArray.find(bombs))
 	remove_child(bombs)
 	
 func GameOver():
 	get_tree().set_pause(true)
-	
-func RemovePlayerCollision(body):
-	print("triggered")
-	body.get_node("StaticBody2D").remove_collision_exception_with(get_node("Player"))
