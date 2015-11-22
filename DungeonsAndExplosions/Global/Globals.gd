@@ -2,7 +2,7 @@ extends Node
 
 var playerLifes = 3
 var points = 0;
-var maxBombCount = 1
+var maxBombCount = 2
 var bombRange = 3
 
 func GetTilePositionFromPosition(position):
