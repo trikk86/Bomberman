@@ -15,9 +15,9 @@ var barrelResource = preload("res://Resources/barrel/barrel.res")
 var potResource = preload("res://Resources/pot/pot.res")
 var chestResource = preload("res://Resources/chest/chest.res")
 var columnResource = preload("res://Resources/column/column.res")
+var exitResource = preload("res://Resources/exit/exit.res")
 
 #end
-
 
 #game
 
@@ -29,39 +29,56 @@ var enemiesArray = Array()
 var explosionRays = Array()
 var explosionIterator = 1
 
+var exit = null
+
 #end
 
 func _ready():
+	#set nodes
+	
 	globals = get_tree().get_root().get_node("/root/Globals")
 	player = get_node("Player")
 	playerAnimationPlayer = get_node("Player/AnimationPlayer")
-	player.TilePosition = Vector2(7,1)
+	
+	#end
+	
+	#generate map
+	
 	PrepareMap()
-	#CheckIfTaken(Vector2(1,11))
-	set_fixed_process(true)
+	
+	#end
+	
+	#set start values
+	
+	player.TilePosition = Vector2(7,1)
 	get_node("Timer").connect("timeout", self, "GameOver")
 	get_node("AnimationPlayer").play("StartLevel")
 	set_pause_mode(true)
 	get_node("Timer").start()
-	#board[Vector2(1,12)]= addChest(1,3)
+	
+	set_fixed_process(true)
+	
+	#end
 	
 func _fixed_process(delta):
 	if(!get_node("AnimationPlayer").is_playing()):
 		set_pause_mode(false)
-		
 
 	if(get_pause_mode() == false):
 		if(globals.playerLifes == 0):
 			set_pause_mode(true)
 			get_node("/root/ScreenLoader").goto_scene("res://Menu/Menu.scn")
-			
+
+		CheckFinish()
 		CheckInput()
 		if(player.DestinationTilePosition != null):
 			MoveNode(delta, player)
+			
 		#MoveEnemies()
+		
 		if(player.isImmune && !player.get_node("BlinkPlayer").is_playing()):
 			player.get_node("BlinkPlayer").play("Blink")
-		
+
 #input functions
 
 func CheckInput():
@@ -88,7 +105,6 @@ func CheckInput():
 			player.DestinationTilePosition = newPosition
 			
 	if(Input.is_key_pressed(KEY_SPACE) && globals.maxBombCount > bombsArray.size() && player.isReloading == false):
-		print("test")
 		PlaceBomb(player.get_pos())
 
 #end
@@ -144,7 +160,7 @@ func PlaceBomb(position):
 		bomb.set_pos(globals.GetTilePositionFromPosition(position))
 		bomb.TilePosition = globals.GetTileIndexesFromPosition(position)
 		board[bomb.TilePosition] = bomb
-		bomb.set_z(bomb.get_pos().y -1)
+		bomb.set_z(0)
 
 		add_child(bomb)
 		bombsArray.append(bomb)
@@ -195,7 +211,6 @@ func CheckTop(explosion):
 				var nextPosition = Vector2(position.x, position.y-1)
 				if(CheckIfTaken(nextPosition, false)):
 					AddExplosionRay(explosion, "top", position, "end")
-					finished = true
 				else:
 					AddExplosionRay(explosion, "top", position, "middle")
 			elif(!CheckIfTaken(position, false) && i + 1 == globals.bombRange):
@@ -213,7 +228,6 @@ func CheckBottom(explosion):
 				var nextPosition = Vector2(position.x, position.y+1)
 				if(CheckIfTaken(nextPosition, false)):
 					AddExplosionRay(explosion, "bottom", position, "end")
-					finished = true
 				else:
 					AddExplosionRay(explosion, "bottom", position, "middle")
 			elif(!CheckIfTaken(position, false) && i + 1 == globals.bombRange):
@@ -231,13 +245,12 @@ func CheckLeft(explosion):
 				var nextPosition = Vector2(position.x - 1, position.y)
 				if(CheckIfTaken(nextPosition, false)):
 					AddExplosionRay(explosion, "left", position, "end")
-					finished = true
 				else:
 					AddExplosionRay(explosion, "left", position, "middle")
 			elif(!CheckIfTaken(position, false) && i + 1 == globals.bombRange):
 				AddExplosionRay(explosion, "left", position, "end")
 			ResolveHit(position)
-	
+
 func CheckRight(explosion):
 	var finished = false
 	for i in range(1, globals.bombRange):
@@ -249,7 +262,6 @@ func CheckRight(explosion):
 				var nextPosition = Vector2(position.x + 1, position.y)
 				if(CheckIfTaken(nextPosition, false)):
 					AddExplosionRay(explosion, "right", position, "end")
-					finished = true
 				else:
 					AddExplosionRay(explosion, "right", position, "middle")
 			elif(!CheckIfTaken(position, false) && i + 1 == globals.bombRange):
@@ -288,13 +300,23 @@ func ClearExplosion(explosion):
 #end
 
 func ResolveHit(pos):
-	if(board[pos] != null && board[pos].get("HitPoints")):
+	if(pos in board && board[pos] != null && board[pos].get("HitPoints")):
 		board[pos].HitPoints -= 1
+		print(board[pos].get("isExit"))
+		
 		if(board[pos].HitPoints == 0):
 			if(board[pos].get("IsBomb") == true):
 				board[pos].get_node("Timer").stop()
 				BombExplode(board[pos])
 			else:
+				
+				if(board[pos].get("isExit") == true):
+					var exitNode = exitResource.instance()
+					exitNode.TilePosition = pos
+					exitNode.set_pos(globals.GetPositionFromTilePosition(pos.x, pos.y))
+					add_child(exitNode)
+					exit = exitNode
+					
 				board[pos].free()
 				board[pos] = null
 
@@ -304,16 +326,29 @@ func ResolveHit(pos):
 func CheckIfTaken(pos, areBombsBlocking):
 	if((pos.x < 1 || pos.x >13) || (pos.y < 1 || pos.y > 11)):
 		return true
-
-	if(board[pos] != null && board[pos].get("IsBlocking") == true):
-		if(areBombsBlocking):
-			return true
-		else:
-			if(board[pos].get("IsBomb") == true):
-				return false
-			return true
+		
+	if(pos in board):
+		if(board[pos] != null && board[pos].get("IsBlocking") == true):
+			if(areBombsBlocking):
+				return true
+			else:
+				if(board[pos].get("IsBomb") == true):
+					return false
+				return true
 	return false
-	
+
+#game func
+
+func CheckFinish():
+	if(enemiesArray.size() == 0 && exit != null):
+		exit.set_frame(1)
+		if(player.TilePosition == exit.TilePosition):
+			set_pause_mode(true)
+			globals.points += (round(get_node("Timer").get_time_left()) * 10)
+			get_node("Timer").stop()
+			get_node("/root/ScreenLoader").goto_scene("res://Resources/levelsplash/levelsplash.res")
+			
+
 func GameOver():
 	set_pause_mode(true)
 
@@ -335,7 +370,7 @@ func GameOver():
 
 
 
-func CreateElement(type, x, y):
+func CreateElement(type, x, y, isExit, powerUp):
 	var instance
 	if(type == "chest"):
 		instance = chestResource.instance()
@@ -346,6 +381,9 @@ func CreateElement(type, x, y):
 	elif(type == "column"):
 		instance = columnResource.instance()
 		
+	if(isExit == true):
+		instance.isExit = true
+		
 	add_child(instance)
 	instance.set_pos(globals.GetPositionFromTilePosition(x,y))
 	instance.set_z(x)
@@ -355,6 +393,11 @@ func PrepareMap():
 	for i in range(1, 13): 
 		for j in range (1, 11):
 			if(i % 2 == 0 && j % 2 == 0):
-				board[Vector2(i,j)] = CreateElement("column",i,j)
+				board[Vector2(i,j)] = CreateElement("column",i,j, false, null)
 			else:
 				board[Vector2(i,j)] = null
+	board[Vector2(1,1)] = CreateElement("pot",1,1, false, null)
+	board[Vector2(1,2)] = CreateElement("pot",1,2, false, null)
+	board[Vector2(1,4)] = CreateElement("chest",1,4, false, null)
+	board[Vector2(10,3)] = CreateElement("barrel", 10, 3, true, null)
+	#board[Vector2(6,1)] = CreateElement("barrel",6,1)
