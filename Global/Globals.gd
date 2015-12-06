@@ -1,9 +1,11 @@
 extends Node
 
 var playerLifes = 3
+var playerMaxLifes = 5
 var points = 0;
-var maxBombs = 1
-var bombRange = 2
+var maxBombCount = 1
+var bombRange = 3
+var level = 1
 
 func GetTilePositionFromPosition(position):
 
@@ -17,6 +19,12 @@ func GetTilePositionFromPosition(position):
 	
 	return tilePosition
 	
+func GetPositionFromTilePosition(x,y):
+	var position = Vector2()
+	position.x = x*32 + 16
+	position.y = y*32 + 80
+	return position
+	
 func GetTileIndexesFromPosition(position):
 
 	var x = round((position.x - 16)/32)
@@ -29,7 +37,7 @@ func GetTileIndexesFromPosition(position):
 	
 	return tilePosition
 	
-func getTileCenter(x, y):
+func GetTileCenter(x, y):
 	var xPos = x * 32 + 32
 	var yPos = y * 32 + 96
 	return Vector2(xPos, yPos)
