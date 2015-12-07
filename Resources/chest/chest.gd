@@ -4,6 +4,8 @@ var HitPoints = 1;
 var IsBlocking = true
 var HasGold = true
 
+var TilePosition = Vector2()
+
 func _ready():
 	set_fixed_process(true)
 	pass

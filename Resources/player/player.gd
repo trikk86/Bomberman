@@ -8,6 +8,8 @@ var isImmune = false
 var isMoving = false
 var isReloading = false
 
+var isSpeedBoost = false
+
 var globals
 var immunityTimer
 var reloadTimer

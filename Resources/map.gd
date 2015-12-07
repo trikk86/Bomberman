@@ -5,6 +5,7 @@ extends Node2D
 var globals
 var player
 var playerAnimationPlayer
+var samplePlayer
 
 #end
 
@@ -19,6 +20,7 @@ var exitResource = preload("res://Resources/exit/exit.res")
 var openBoxResource = preload("res://Resources/openbox/openbox.res")
 var closedBoxResource = preload("res://Resources/closedbox/closedbox.res")
 var powerUpResource = preload("res://Resources/powerups/powerup.res")
+var coinResource = preload("res://Resources/coin/coin.res")
 
 #end
 
@@ -34,6 +36,8 @@ var explosionIterator = 1
 
 var powerUpsArray = Array()
 
+var coinsArray = Array()
+
 var exit = null
 
 var isPaused = false
@@ -47,6 +51,7 @@ func _ready():
 	globals = get_tree().get_root().get_node("/root/Globals")
 	player = get_node("Player")
 	playerAnimationPlayer = get_node("Player/AnimationPlayer")
+	samplePlayer = get_node("SamplePlayer2D")
 	
 	#end
 	
@@ -77,6 +82,7 @@ func _fixed_process(delta):
 		CheckFinish()
 		CheckPowerUps()
 		MoveEnemies(delta)
+		
 		if(player.DestinationTilePosition != null):
 			MoveNode(delta, player)
 
@@ -119,26 +125,42 @@ func CheckInput():
 
 #end
 
+#collision functions
+
+func CheckCollision(playerPosition):
+	for powerup in powerUpsArray:
+		if(playerPosition == powerup.TilePosition):
+			samplePlayer.play("power_up")
+			if(powerup.PowerUpType == powerup.BombRange):
+				globals.bombRange += 1
+			elif(powerup.PowerUpType == powerup.ExtraBomb):
+				globals.maxBombCount += 1
+			elif(powerup.PowerUpType == powerup.SpeedBoost):
+				player.isSpeedBoost = true
+			elif(powerup.PowerUpType == powerup.ExtraLife && globals.playerLifes < globals.playerMaxLifes):
+				globals.playerLifes += 1
+			remove_child(powerup)
+			powerUpsArray.erase(powerup)
+			powerup.free()
+			
+	for enemy in enemiesArray:
+		if(enemy.TilePosition == playerPosition):
+			player.LoseLife()
+			
+	for coin in coinsArray:
+		if(playerPosition == coin.TilePosition):
+			globals.points += coin.Points
+			remove_child(coin)
+			coinsArray.erase(coin)
+			coin.free()
+			samplePlayer.play("treasure")
+
 func CheckPowerUps():
 	if(enemiesArray.size() == 0):
 		for pos in board:
 			if(board[pos] != null && board[pos].get("PowerUp") != null && board[pos].PowerUp > 0):
 				if(!board[pos].get_node("AnimationPlayer").is_playing()):
 					board[pos].get_node("AnimationPlayer").play("Blink")
-			
-	for powerup in powerUpsArray:
-		if(player.TilePosition == powerup.TilePosition):
-			if(powerup.PowerUpType == powerup.BombRange):
-				globals.bombRange += 1
-			elif(powerup.PowerUpType == powerup.ExtraBomb):
-				globals.maxBombCount += 1
-			elif(powerup.PowerUpType == powerup.SpeedBoost):
-				player.WalkSpeed = player.WalkSpeed * 2
-			elif(powerup.PowerUpType == powerup.ExtraLife && globals.playerLifes < globals.playerMaxLifes):
-				globals.playerLifes += 1
-			remove_child(powerup)
-			powerUpsArray.erase(powerup)
-			powerup.free()
 
 func CheckFinish():
 	if(globals.playerLifes == 0 && isOver == false):
@@ -283,9 +305,18 @@ func MoveNode(delta, node):
 		node.TilePosition = node.DestinationTilePosition
 		node.DestinationTilePosition = null
 		node.isMoving = false
+		
+		if(node == player && node.isSpeedBoost):
+				node.isSpeedBoost = false
+				node.WalkSpeed = node.WalkSpeed * 2
 	else:
 		node.isMoving = true
 		
+	if(abs(nodePosition.x - nodeDestinationPixelPosition.x) < 16 && abs(nodePosition.y - nodeDestinationPixelPosition.y) < 16):
+		if(node == player):
+			CheckCollision(node.DestinationTilePosition)
+
+	
 	if(node.isMoving):
 		if(nodePixelPosition.y > nodeDestinationPixelPosition.y):
 			nodePosition.y -= node.WalkSpeed*delta
@@ -337,11 +368,12 @@ func PlaceBomb(position):
 		player.reloadTimer.start()
 
 func BombExplode(bomb):
+	samplePlayer.play("explosion2")
 	board[bomb.TilePosition] = null
 	bombsArray.remove(bombsArray.find(bomb))
 	remove_child(bomb)
-	
 	var explosion = explosionResource.instance()
+	
 	explosion.set_pos(bomb.get_pos())
 	explosion.set_z(bomb.get_pos().y -1)
 	explosion.TilePosition = bomb.TilePosition
@@ -351,6 +383,7 @@ func BombExplode(bomb):
 	explosion.get_node("ExplosionTimer").start()
 	explosion.get_node("AnimationPlayer").play("Explode")
 	add_child(explosion)
+
 	
 	ResolveBombHit(Vector2(explosion.TilePosition.x, explosion.TilePosition.y))
 	
@@ -437,6 +470,7 @@ func AddExplosionRay(explosion, direction, position, type):
 	var explosionRay = explosionRayResource.instance()
 	explosionRay.explosionId = explosion.explosionId
 	add_child(explosionRay)
+	
 	if(type == "end"):
 		explosionRay.set_frame(3)
 	else:
@@ -459,6 +493,7 @@ func ClearExplosion(explosion):
 			remove_child(ray)
 			ray.free()
 			explosionRays.erase(ray)
+			
 	remove_child(explosion)
 	explosion.free()
 
@@ -486,16 +521,23 @@ func ResolveBombHit(pos):
 					powerUpNode.set_pos(globals.GetPositionFromTilePosition(pos.x, pos.y))
 					#powerUpNode.get_node("PopAnimationPlayer").play("Pop")
 				
-				if(board[pos].get("HasGold")!= null):
+				if(board[pos].get("HasGold") != null):
 					board[pos].get_node("Timer").connect("timeout", self, "Remove", [board[pos]])
 					board[pos].get_node("Timer").start()
-					print("started")
+					
+					var coin = coinResource.instance()
+					coin.TilePosition = pos
+					coin.set_z(pos.y + 2)
+					coinsArray.append(coin)
+					add_child(coin)
+					coin.set_pos(globals.GetPositionFromTilePosition(pos.x, pos.y))
 				else:
 					board[pos].free()
 					board[pos] = null
 
 	if(player.TilePosition == pos):
 		player.LoseLife()
+		
 	for enemy in enemiesArray:
 		if(pos == enemy.TilePosition):
 			enemy.HitPoints -= 1
@@ -506,9 +548,9 @@ func ResolveBombHit(pos):
 				enemy.free()
 
 func Remove(node):
-	print("test")
-	remove_child(node)
+	board[node.TilePosition] = null
 	node.free()
+	remove_child(node)
 
 #end bomb logic
 	
@@ -559,6 +601,7 @@ func CreateElement(type, x, y, isExit, powerUp):
 	add_child(instance)
 	instance.set_pos(globals.GetPositionFromTilePosition(x,y))
 	instance.set_z(x)
+	instance.TilePosition = Vector2(x,y)
 	return instance
 	
 func PrepareMap():
