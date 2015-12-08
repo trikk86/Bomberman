@@ -22,6 +22,9 @@ var closedBoxResource = preload("res://Resources/closedbox/closedbox.res")
 var powerUpResource = preload("res://Resources/powerups/powerup.res")
 var coinResource = preload("res://Resources/coin/coin.res")
 
+var goblinResource = preload("res://Resources/goblin/goblin.res")
+var beholderResource = preload("res://Resources/beholder/beholder.res")
+
 #end
 
 #game
@@ -42,6 +45,8 @@ var exit = null
 
 var isPaused = false
 var isOver = false
+
+var timeLeft
 
 #end
 
@@ -77,11 +82,12 @@ func _fixed_process(delta):
 	if(!get_node("AnimationPlayer").is_playing()):
 		set_pause_mode(false)
 
-	if(get_pause_mode() == false):
+	if(get_pause_mode() == false && !isOver && !isPaused):
 		CheckInput()
 		CheckFinish()
 		CheckPowerUps()
 		MoveEnemies(delta)
+		UpdateTimer()
 		
 		if(player.DestinationTilePosition != null):
 			MoveNode(delta, player)
@@ -90,6 +96,11 @@ func _fixed_process(delta):
 			player.get_node("BlinkPlayer").play("Blink")
 
 #input functions
+
+func UpdateTimer():
+	if(get_node("Timer").is_processing()):
+		timeLeft = get_node("Timer").get_time_left()
+		get_node("HUD/TimeValueLabel").SetTime(timeLeft)
 
 func CheckInput():
 	var newPosition = Vector2()
@@ -117,10 +128,11 @@ func CheckInput():
 	if(Input.is_key_pressed(KEY_SPACE) && globals.maxBombCount > bombsArray.size() && player.isReloading == false):
 		PlaceBomb(player.get_pos())
 		
-	if(Input.is_key_pressed(KEY_ESCAPE) ):
-		if(isPaused):
-			isPaused = !isPaused;
-			set_pause_mode(isPaused)
+	if(Input.is_key_pressed(KEY_ESCAPE)):
+		if(!isPaused):
+			isPaused = true;
+			set_pause_mode(true)
+			get_node("Timer").stop()
 		#showmenu
 
 #end
@@ -165,22 +177,29 @@ func CheckPowerUps():
 func CheckFinish():
 	if(globals.playerLifes == 0 && isOver == false):
 		GameOver()
+	if(get_node("Timer").get_time_left() == 0):
+		GameOver()
 
 	if(enemiesArray.size() == 0 && exit != null):
 		exit.set_frame(1)
 		if(player.TilePosition == exit.TilePosition):
 			set_pause_mode(true)
-			var timeLeft = (round(get_node("Timer").get_time_left()) * 10)
-			globals.points += timeLeft
 			get_node("Timer").stop()
+			if(timeLeft > 5):
+				globals.points += 5
+				timeLeft -= 5
+			else:
+				globals.points += timeLeft
+				timeLeft = 0
 			globals.level += 1
 			get_node("/root/ScreenLoader").goto_scene("res://Resources/levelsplash/levelsplash.res")
 
 func GameOver():
+	if(isOver == false):
+		get_node("AnimationPlayer").play("GameOver")
 	isOver = true
 	set_pause_mode(true)
-	get_node("AnimationPlayer").play("GameOver")
-
+	
 #region enemies
 
 func MoveEnemies(delta):
@@ -286,9 +305,11 @@ func GetRandomPath(tilePosition):
 		directionArray.append(rightField)
 		
 	randomize()
-	var randomDirection = randi()%directionArray.size()
-	
-	return directionArray[randomDirection]
+	if(directionArray.size() != 0):
+		var randomDirection = randi()%directionArray.size()
+		return directionArray[randomDirection]
+		
+	return null
 
 #end region enemies
 
@@ -347,7 +368,7 @@ func MoveNode(delta, node):
 func PlaceBomb(position):
 	if(player.isReloading == false):
 		for bomb in bombsArray:
-			if(bomb.TilePosition == position):
+			if(bomb.TilePosition == player.TilePosition):
 				return
 
 		var bomb = bombsResource.instance()
@@ -541,6 +562,7 @@ func ResolveBombHit(pos):
 	for enemy in enemiesArray:
 		if(pos == enemy.TilePosition):
 			enemy.HitPoints -= 1
+			print(enemy.HitPoints)
 			if(enemy.HitPoints == 0):
 				globals.points += enemy.Points
 				enemiesArray.erase(enemy)
@@ -570,7 +592,7 @@ func CheckIfTaken(pos, areBombsBlocking):
 
 #region mapgeneration
 
-func CreateElement(type, x, y, isExit, powerUp):
+func CreateElement(type, x, y, isExit = false, powerUp = null):
 	var instance
 	if(type == "chest"):
 		instance = chestResource.instance()
@@ -585,7 +607,7 @@ func CreateElement(type, x, y, isExit, powerUp):
 	elif(type == "closedbox"):
 		instance = closedBoxResource.instance()
 	
-	if(instance.get("PowerUp") != null):
+	if(powerUp != null && instance.get("PowerUp") != null):
 		if(powerUp == "BombRange"):
 			instance.PowerUp = 1
 		elif(powerUp == "ExtraBomb"):
@@ -600,25 +622,92 @@ func CreateElement(type, x, y, isExit, powerUp):
 	
 	add_child(instance)
 	instance.set_pos(globals.GetPositionFromTilePosition(x,y))
-	instance.set_z(x)
+	instance.set_z(y)
 	instance.TilePosition = Vector2(x,y)
-	return instance
+	board[instance.TilePosition] = instance
+	
+func SpawnEnemy(type, x, y):
+	var instance
+	if(type == "Goblin"):
+		instance = goblinResource.instance()
+	if(type == "Beholder"):
+		instance = beholderResource.instance()
+		
+	add_child(instance)
+	instance.set_pos(globals.GetPositionFromTilePosition(x,y))
+	instance.set_z(y)
+	instance.TilePosition = Vector2(x,y)
+	enemiesArray.append(instance)
 	
 func PrepareMap():
 	for i in range(1, 13): 
 		for j in range (1, 11):
 			if(i % 2 == 0 && j % 2 == 0):
-				board[Vector2(i,j)] = CreateElement("column",i,j, false, null)
-			else:
-				board[Vector2(i,j)] = null
-	board[Vector2(1,1)] = CreateElement("pot",1,1, false, null)
-	board[Vector2(1,2)] = CreateElement("pot",1,2, false, null)
-	board[Vector2(1,4)] = CreateElement("chest",1,4, false, null)
-	board[Vector2(10,3)] = CreateElement("barrel", 10, 3, false, "ExtraLife")
-	board[Vector2(7,7)] = CreateElement("openbox",7,7, false, "ExtraBomb")
-	board[Vector2(7,5)] = CreateElement("closedbox", 7,5, false, "SpeedBoost")
-	board[Vector2(8,1)] = CreateElement("closedbox", 8,1, false, "BombRange")
+				CreateElement("column",i,j, false, null)
+				
+	CreateElement("chest",1,1)
+	CreateElement("barrel",1,2)
+	CreateElement("barrel",1,3)
+	CreateElement("closedbox",1,5)
+	CreateElement("chest",1,6)
+	SpawnEnemy("Goblin", 1,7)
+	CreateElement("chest",1,8)
+	CreateElement("closedbox",1,9)
+	CreateElement("barrel", 1, 11, true)
 	
-	get_node("Goblin").TilePosition = Vector2(1,6)
-	get_node("Goblin").set_pos(globals.GetPositionFromTilePosition(get_node("Goblin").TilePosition.x, get_node("Goblin").TilePosition.y))
-	enemiesArray.append(get_node("Goblin"))
+	CreateElement("barrel",2,1)
+	CreateElement("closedbox",2,7)
+	
+	CreateElement("barrel",3,1)
+	SpawnEnemy("Goblin", 3,3)
+	CreateElement("openbox",3,5)
+	CreateElement("barrel", 3,9, false, "ExtraLife")
+	CreateElement("barrel", 3,11)
+	
+	CreateElement("closedbox", 4,3)
+	CreateElement("closedbox", 4,7)
+	
+	CreateElement("chest",5,1)
+	CreateElement("pot",5,2)
+	CreateElement("closedbox", 5,6)
+	CreateElement("pot",5,9)
+	CreateElement("barrel", 5,11)
+	
+	CreateElement("pot",6,1)
+	SpawnEnemy("Beholder", 6,9)
+	
+	CreateElement("closedbox", 7,3)
+	CreateElement("openbox",7,5)
+	CreateElement("closedbox", 7,6)
+	CreateElement("pot",7,9)
+	CreateElement("chest",7,11)
+	
+	CreateElement("openbox",8,7)
+	CreateElement("pot",8,11)
+	
+	CreateElement("barrel", 9,1)
+	CreateElement("closedbox", 9,6)
+	CreateElement("closedbox", 9,7)
+	CreateElement("pot",9,10)
+
+	CreateElement("closedbox", 10,7)
+	SpawnEnemy("Beholder", 10,11)
+	
+	SpawnEnemy("Goblin", 11, 1)
+	CreateElement("pot", 11, 2)
+	CreateElement("closedbox", 11, 7)
+	CreateElement("closedbox", 11, 8)
+	CreateElement("pot",11,10)
+	
+	CreateElement("openbox", 12, 3)
+	CreateElement("closedbox", 12,5)
+	CreateElement("openbox", 12, 7)
+	CreateElement("pot", 12, 9)
+	
+	CreateElement("chest", 13,1)
+	SpawnEnemy("Goblin", 13, 4)
+	SpawnEnemy("Goblin", 13, 8)
+	CreateElement("pot", 13, 9)
+	CreateElement("closedbox", 13, 11)
+	
+	
