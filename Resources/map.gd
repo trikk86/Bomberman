@@ -328,8 +328,8 @@ func MoveNode(delta, node):
 		node.isMoving = false
 		
 		if(node == player && node.isSpeedBoost):
-				node.isSpeedBoost = false
-				node.WalkSpeed = node.WalkSpeed * 2
+			node.isSpeedBoost = false
+			node.WalkSpeed = node.WalkSpeed * 2
 	else:
 		node.isMoving = true
 		
@@ -358,6 +358,9 @@ func MoveNode(delta, node):
 			nodePosition.x += node.WalkSpeed*delta
 			if(!animationPlayer.is_playing() || animationPlayer.get_current_animation() != "MoveRight"):
 				animationPlayer.play("MoveRight")
+
+		if(node.get_node("SamplePlayer2D") != null && !node.get_node("SamplePlayer2D").is_voice_active(0)):
+			node.get_node("SamplePlayer2D").play("step")
 
 		node.set_pos(nodePosition)
 
