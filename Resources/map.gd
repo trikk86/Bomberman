@@ -45,6 +45,7 @@ var exit = null
 
 var isPaused = false
 var isOver = false
+var exitSoundPlayed = false;
 
 var timeLeft
 
@@ -177,11 +178,14 @@ func CheckPowerUps():
 func CheckFinish():
 	if(globals.playerLifes == 0 && isOver == false):
 		GameOver()
-	if(get_node("Timer").get_time_left() == 0):
+	if(timeLeft == 0):
 		GameOver()
 
 	if(enemiesArray.size() == 0 && exit != null):
 		exit.set_frame(1)
+		if(!exitSoundPlayed):
+			get_node("SamplePlayer2D").play("exitopen")
+			exitSoundPlayed = true;
 		if(player.TilePosition == exit.TilePosition):
 			set_pause_mode(true)
 			get_node("Timer").stop()
@@ -191,8 +195,8 @@ func CheckFinish():
 			else:
 				globals.points += timeLeft
 				timeLeft = 0
-			globals.level += 1
-			get_node("/root/ScreenLoader").goto_scene("res://Resources/levelsplash/levelsplash.res")
+				globals.level += 1
+				get_node("/root/ScreenLoader").goto_scene("res://Resources/levelsplash/levelsplash.res")
 
 func GameOver():
 	if(isOver == false):
@@ -204,8 +208,6 @@ func GameOver():
 
 func MoveEnemies(delta):
 	for enemy in enemiesArray:
-		if(enemy.TilePosition == player.TilePosition):
-			player.LoseLife()
 		if(!enemy.isMoving):
 			GetEnemyDestinationTileLocation(enemy)
 			
@@ -305,6 +307,7 @@ func GetRandomPath(tilePosition):
 		directionArray.append(rightField)
 		
 	randomize()
+	
 	if(directionArray.size() != 0):
 		var randomDirection = randi()%directionArray.size()
 		return directionArray[randomDirection]
@@ -336,7 +339,9 @@ func MoveNode(delta, node):
 	if(abs(nodePosition.x - nodeDestinationPixelPosition.x) < 16 && abs(nodePosition.y - nodeDestinationPixelPosition.y) < 16):
 		if(node == player):
 			CheckCollision(node.DestinationTilePosition)
-
+	else:
+		if(node == player):
+			CheckCollision(node.TilePosition)
 	
 	if(node.isMoving):
 		if(nodePixelPosition.y > nodeDestinationPixelPosition.y):
@@ -359,7 +364,7 @@ func MoveNode(delta, node):
 			if(!animationPlayer.is_playing() || animationPlayer.get_current_animation() != "MoveRight"):
 				animationPlayer.play("MoveRight")
 
-		if(node.get_node("SamplePlayer2D") != null && !node.get_node("SamplePlayer2D").is_voice_active(0)):
+		if(node.has_node_and_resource("SamplePlayer2D") && !node.get_node("SamplePlayer2D").is_voice_active(0)):
 			node.get_node("SamplePlayer2D").play("step")
 
 		node.set_pos(nodePosition)
@@ -650,12 +655,12 @@ func PrepareMap():
 				
 	CreateElement("chest",1,1)
 	CreateElement("barrel",1,2)
-	CreateElement("barrel",1,3)
+	CreateElement("barrel",1,3, false, "BombRange")
 	CreateElement("closedbox",1,5)
 	CreateElement("chest",1,6)
 	SpawnEnemy("Goblin", 1,7)
 	CreateElement("chest",1,8)
-	CreateElement("closedbox",1,9)
+	CreateElement("closedbox",1,9, false, "ExtraBomb")
 	CreateElement("barrel", 1, 11, true)
 	
 	CreateElement("barrel",2,1)

@@ -38,3 +38,4 @@ func LoseLife():
 		globals.playerLifes -= 1
 		immunityTimer.start()
 		isImmune = true
+		get_node("SamplePlayer2D").play("dmg")
