@@ -9,7 +9,6 @@ var globals
 
 #state
 
-var isPaused = false
 var isOver = false
 
 var TimeLeft = 240
@@ -31,48 +30,45 @@ func _ready():
 	pass
 	
 func _fixed_process(delta):
-	if(!isPaused):
-		CheckFinish()
-		hud.UpdateHUD(globals.playerLifes, TimeLeft, globals.points)
-		if(player.DestinationTilePosition != null):
-			map.MoveNode(player, delta)
-		map.MoveEnemies(player, delta)
-		CheckInput()
-		
+	CheckFinish()
+	hud.UpdateHUD(globals.playerLifes, TimeLeft, globals.points)
+	if(player.DestinationTilePosition != null):
+		map.MoveNode(player, delta)
+	map.MoveEnemies(player, delta)
+	CheckInput()
 		
 func _input(event):
 	if(event.type == 1 && !event.is_pressed() && event.scancode == KEY_ESCAPE && !event.is_echo()):
-		if(isPaused):
+		if(get_tree().is_paused()):
 			UnpauseGame()
 		else:
 			PauseGame()
 
 func CheckInput():
-	if(!isPaused):
-		var newPosition = Vector2()
+	var newPosition = Vector2()
 	
-		if(Input.is_action_pressed("ui_down") && !player.isMoving):
-			newPosition = Vector2(player.TilePosition.x, player.TilePosition.y+1)
-			if(!map.CheckIfTaken(newPosition)):
-				player.DestinationTilePosition = newPosition
-				
-		elif(Input.is_action_pressed("ui_up") && !player.isMoving):
-			newPosition = Vector2(player.TilePosition.x, player.TilePosition.y-1)
-			if(!map.CheckIfTaken(newPosition)):
-				player.DestinationTilePosition = newPosition
-				
-		elif(Input.is_action_pressed("ui_left") && !player.isMoving):
-			newPosition = Vector2(player.TilePosition.x -1, player.TilePosition.y)
-			if(!map.CheckIfTaken(newPosition)):
-				player.DestinationTilePosition = newPosition
-				
-		elif(Input.is_action_pressed("ui_right") && !player.isMoving):
-			newPosition = Vector2(player.TilePosition.x+1 , player.TilePosition.y)
-			if(!map.CheckIfTaken(newPosition)):
-				player.DestinationTilePosition = newPosition
-				
-		if(Input.is_action_pressed("place_bomb") && globals.maxBombCount > GetActiveBombCount()  && player.isReloading == false):
-			PlaceBomb(player.BombPosition)
+	if(Input.is_action_pressed("ui_down") && !player.isMoving):
+		newPosition = Vector2(player.TilePosition.x, player.TilePosition.y+1)
+		if(!map.CheckIfTaken(newPosition)):
+			player.DestinationTilePosition = newPosition
+
+	elif(Input.is_action_pressed("ui_up") && !player.isMoving):
+		newPosition = Vector2(player.TilePosition.x, player.TilePosition.y-1)
+		if(!map.CheckIfTaken(newPosition)):
+			player.DestinationTilePosition = newPosition
+
+	elif(Input.is_action_pressed("ui_left") && !player.isMoving):
+		newPosition = Vector2(player.TilePosition.x -1, player.TilePosition.y)
+		if(!map.CheckIfTaken(newPosition)):
+			player.DestinationTilePosition = newPosition
+
+	elif(Input.is_action_pressed("ui_right") && !player.isMoving):
+		newPosition = Vector2(player.TilePosition.x+1 , player.TilePosition.y)
+		if(!map.CheckIfTaken(newPosition)):
+			player.DestinationTilePosition = newPosition
+
+	if(Input.is_action_pressed("place_bomb") && globals.maxBombCount > GetActiveBombCount()  && player.isReloading == false):
+		PlaceBomb(player.BombPosition)
 
 func GetActiveBombCount():
 	var counter = 0
@@ -84,7 +80,7 @@ func GetActiveBombCount():
 func PlaceBomb(position):
 	if(player.isReloading == false):
 		for bomb in map.bombs:
-			if(bomb.TilePosition == player.BombPosition):
+			if(bomb.TilePosition == player.BombPosition && bomb.is_visible()):
 				return
 		map.AddNode("bomb", position)
 		player.isReloading = true
@@ -98,13 +94,11 @@ func CheckFinish():
 			if(player.TilePosition == map.exit.TilePosition):
 				set_pause_mode(true)
 				timer.stop()
-				if(TimeLeft > 5):
-					globals.points += 5
-					TimeLeft -= 5
+				if(TimeLeft > 0):
+					globals.points += 1
+					TimeLeft -= 1
 				else:
-					globals.points += TimeLeft
-					TimeLeft = 0
-				#globals.level += 1
+					globals.level += 1
 				#get_node("/root/ScreenLoader").goto_scene("res://Resources/levelsplash/levelsplash.res")
 
 func UpdateTime():
@@ -113,20 +107,17 @@ func UpdateTime():
 		GameOver()
 
 func PauseGame():
-	isPaused = true;
-	set_pause_mode(true)
-	get_node("Pause").set_opacity(1)
+	get_tree().set_pause(true)
+	get_node("Pause").show()
 	get_node("Timer").stop()
 
 func UnpauseGame():
-	isPaused = false;
-	set_pause_mode(false)
-	get_node("Pause").set_opacity(0)
+	get_tree().set_pause(false)
+	get_node("Pause").hide()
 	get_node("Timer").start()
 
 func GameOver():
-	isPaused = true;
-	get_node("GameOver").set_opacity(1)
+	get_node("GameOver").show()
 	isOver = true
-	set_pause_mode(true)
+	get_tree().set_pause(true)
 

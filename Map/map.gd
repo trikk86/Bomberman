@@ -3,16 +3,17 @@ extends "res://Map/baseMap.gd"
 func _fixed_process(delta):
 	if(enemies.size() == 0):
 		for item in board:
-			if(board[item] != null && board[item] extends terrainTileElement):
+			if(board[item] != null && board[item] extends tileElement):
 				board[item].OnEnemiesCleared()
 				
 	for bomb in bombs:
-		if(bomb.get_opacity() == 0 && bomb.IsExploded && !bomb.get_node("SamplePlayer2D").is_voice_active(0)):
+		if(bomb.is_visible() == 0 && bomb.IsExploded && !bomb.get_node("SamplePlayer2D").is_voice_active(0)):
 			bombs.erase(bomb)
 			bomb.free()
 			
 	for enemy in enemies:
 		if(enemy.HitPoints == 0 && enemy.isDeathAnimationFinished):
+			globals.points += enemy.Points
 			enemies.erase(enemy)
 			enemy.free()
 			
@@ -34,7 +35,7 @@ func CheckTile(tilePosition):
 			elif(collectible.PowerUpType == 8 && globals.playerLifes < globals.playerMaxLifes):
 				globals.playerLifes += 1
 
-			collectible.set_opacity(0)
+			collectible.hide()
 			collectible.OnTouch()
 
 func CheckIfTaken(pos):
@@ -45,7 +46,10 @@ func CheckIfTaken(pos):
 	return false
 	
 func ResolveHit(position):
-	if(position in board && board[position] != null):
+	if(exit != null && exit.TilePosition == position):
+		SpawnEnemies(position)
+
+	if(position in board && board[position] != null && board[position].is_visible()):
 		board[position].OnHit()
 		
 		if(board[position].HitPoints == 0):
@@ -56,9 +60,6 @@ func ResolveHit(position):
 				board[position].get_node("Timer").connect("timeout", self, "RemoveNode", [board[position]])
 				board[position].get_node("Timer").start()
 			
-			if(board[position].HasExit):
-				exit = AddNode("exit", position)
-			
 			if(board[position].IsBomb):
 				if(!board[position].IsExploded):
 					BombExplode(board[position])
@@ -67,7 +68,15 @@ func ResolveHit(position):
 				if(!board[position].IsDelayedDeath && !board[position].IsBomb):
 					board[position].free()
 				board[position] = null;
-			
+
+func SpawnEnemies(position):
+	var beholder1 = SpawnEnemy("Beholder", position.x,position.y)
+	var beholder2 = SpawnEnemy("Beholder", position.x,position.y)
+	var beholder3 = SpawnEnemy("Beholder", position.x,position.y)
+	
+	beholder1.StartImmunity()
+	beholder2.StartImmunity()
+	beholder3.StartImmunity()
 
 func BombExplode(bomb):
 	var explosion = AddNode("explosion", bomb.TilePosition, "main")

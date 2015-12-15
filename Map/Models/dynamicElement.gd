@@ -10,7 +10,11 @@ var isPlayer = false
 var immunityTimer
 
 func _ready():
-	pass
+	set_process(true)
+
+func _process(delta):
+	if(isImmune && !get_node("BlinkPlayer").is_playing()):
+		get_node("BlinkPlayer").play("Blink")
 
 func OnHit():
 	pass

@@ -13,7 +13,6 @@ func _ready():
 	set_process(true)
 	get_node("AnimationPlayer").connect("finished", self, "DeathAnimationFinished")
 
-	
 func _process(delta):
 	if(isImmune && !get_node("BlinkPlayer").is_playing()):
 		get_node("BlinkPlayer").play("Blink")
@@ -21,24 +20,26 @@ func _process(delta):
 func OnHit():
 	if(!isImmune):
 		HitPoints -= 1
-		isImmune = true
-		immunityTimer.start()
+		StartImmunity()
 	if(HitPoints == 0):
 		OnDeath()
 
 func OnDeath():
 	isMoving = false
 	DestinationTilePosition = null
+	get_node("BlinkPlayer").stop()
+	show()
 	if(!isDeathAnimationFinished):
 		get_node("AnimationPlayer").play("Die")
-		
 	get_node("Area2D/CollisionShape2D").set_trigger(true)
-
+	
 func DeathAnimationFinished():
 	if(get_node("AnimationPlayer").get_current_animation() == "Die"):
-		print("DeathAnimationFinished")
 		isDeathAnimationFinished = true
 
+func StartImmunity():
+	isImmune = true
+	immunityTimer.start()
 
 func StopImmunity():
 	isImmune = false

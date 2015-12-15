@@ -1,9 +1,9 @@
 extends "res://Map/tileElement.gd"
 
-var isOpened = false
+var IsOpened = false
 
 func OnEnemiesCleared():
-	if(!isOpened):
+	if(!IsOpened):
 		set_frame(1)
 		get_node("SamplePlayer2D").play("exitopen")
-		isOpened = true
+		IsOpened = true

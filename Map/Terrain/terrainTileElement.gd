@@ -1,7 +1,6 @@
 extends "res://Map/tileElement.gd"
 
 var HitPoints = 1
-var HasExit = false
 var PowerUpType = 0
 var IsBlocking = true
 var HasPoints = false;

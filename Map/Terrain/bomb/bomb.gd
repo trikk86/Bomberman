@@ -8,10 +8,10 @@ func _ready():
 	IsDelayedDeath = true
 
 func OnDeath():
-	set_opacity(0)
-	get_node("SamplePlayer2D").play("explosion2", 0)
+	hide()
+	get_node("SamplePlayer2D").play("explosion", 0)
 	IsExploded = true
-	
+
 func OnEnemiesCleared():
 	pass
 	

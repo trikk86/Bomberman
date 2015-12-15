@@ -5,13 +5,19 @@ var buttons = {}
 var cursor
 
 func _ready():
+	get_tree().set_pause(false)
 	get_node("AnimTimer").connect("timeout", self, "StartAnimation")
 
 	get_node("StreamPlayer").play()
 	
-	get_node("Items/NewGame").connect("pressed", self, "NewGame")
-	get_node("Items/Credits").connect("pressed", self, "ShowCredits")
-	get_node("Items/Quit").connect("pressed", self, "Quit")
+	get_node("Items/NewGame").SetText("new game")
+	get_node("Items/HighScores").SetText("highscores")
+	get_node("Items/Credits").SetText("credits")
+	get_node("Items/Quit").SetText("quit")
+	get_node("ConnectTimer").connect("timeout", self, "StartProcessing")
+	
+	get_node("StreamPlayer").play()
+
 	
 	buttons[0] = get_node("Items/NewGame")
 	buttons[1] = get_node("Items/HighScores")
@@ -39,11 +45,21 @@ func _input(event):
 
 	if(event.type == InputEvent.KEY && event.scancode == KEY_SPACE && !event.is_pressed() && !event.is_echo()):
 		buttons[selectedbuttonIndex].emit_signal("pressed")
-		
+
+func StartProcessing():
+	get_node("Items/NewGame").connect("pressed", self, "NewGame")
+	get_node("Items/Credits").connect("pressed", self, "ShowCredits")
+	get_node("Items/Quit").connect("pressed", self, "Quit")
+
 
 func NewGame():
 	get_node("/root/Globals").points = 0
 	get_node("/root/Globals").playerLifes = 3
+	get_node("/root/Globals").maxBombCount = 1
+	get_node("/root/Globals").bombRange = 2
+	get_node("/root/Globals").maxBombCount = 1
+	get_node("/root/Globals").walkSpeed = 60
+	get_node("/root/Globals").level = 1
 	get_node("/root/ScreenLoader").goto_scene("res://Intro/intro.res")
 	
 func Quit():
@@ -51,7 +67,6 @@ func Quit():
 
 func ShowCredits():
 	get_node("/root/ScreenLoader").goto_scene("res://Credits/credits.scn")
-
 	
 func StartAnimation():
 	get_node("AnimationPlayer").play("Blink")

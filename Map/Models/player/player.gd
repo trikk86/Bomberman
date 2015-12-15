@@ -19,6 +19,7 @@ func _ready():
 	
 	reloadTimer = get_node("ReloadTimer")
 	reloadTimer.connect("timeout", self, "ReloadFinished")
+	set_process(true)
 
 func StopImmunity():
 	isImmune = false
@@ -33,7 +34,6 @@ func OnHit():
 		isImmune = true
 		get_node("BlinkPlayer").play("Blink")
 		get_node("SamplePlayer2D").play("dmg")
-		
 
 func MoveUp():
 	.MoveUp();
@@ -56,6 +56,5 @@ func MoveRight():
 		get_node("SamplePlayer2D").play("step")
 
 func _on_Area2D_area_enter(area):
-	print("Test")
 	if(area.get_parent() extends enemyElementClass):
 		OnHit() 

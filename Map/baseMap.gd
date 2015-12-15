@@ -6,6 +6,7 @@ var globals
 
 const terrainTileElement = preload("res://Map/Terrain/terrainTileElement.gd")
 const collectibleTileElement = preload("res://Map/Collectibles/collectibleTileElement.gd")
+const tileElement = preload("res://Map/tileElement.gd")
 
 var barrelResource = preload("res://Map/Terrain/barrel/barrel.res")
 var potResource = preload("res://Map/Terrain/pot/pot.res")
@@ -137,7 +138,7 @@ func GetRandomPath(tilePosition):
 	randomize()
 	
 	if(directionArray.size() != 0):
-		var randomDirection = randi()%directionArray.size()
+		var randomDirection = randi() % directionArray.size()
 		return directionArray[randomDirection]
 
 	return null
@@ -157,15 +158,17 @@ func MoveNode(node, delta):
 			node.BombPosition = Vector2(node.TilePosition.x, node.TilePosition.y)
 			if(globals.isSpeedBoostScheduled):
 				globals.isSpeedBoostScheduled = false
-				node.WalkSpeed = node.WalkSpeed * 2
+				globals.walkSpeed = globals.walkSpeed * 2
 	else:
 		node.isMoving = true
 	
 	if(node.isPlayer):
+		node.WalkSpeed = globals.walkSpeed
 		if(abs(nodePosition.x - nodeDestinationPixelPosition.x) < 16 && abs(nodePosition.y - nodeDestinationPixelPosition.y) < 16):
 			if(node.DestinationTilePosition != null):
 				CheckTile(node.DestinationTilePosition)
 				node.BombPosition = Vector2(node.DestinationTilePosition.x, node.DestinationTilePosition.y)
+				node.set_z(node.DestinationTilePosition.y + 1)
 		else:
 			node.BombPosition = Vector2(node.TilePosition.x, node.TilePosition.y)
 	
@@ -240,7 +243,9 @@ func CreateElement(type, x, y, powerUp = null, isExit = false):
 		instance = openBoxResource.instance()
 	elif(type == "closedbox"):
 		instance = closedBoxResource.instance()
-	
+	elif(type =="exit"):
+		instance = exitResource.instance()
+		exit = instance
 	if(powerUp != null):
 		if(powerUp == "BombRange"):
 			instance.PowerUpType = 1
@@ -250,9 +255,6 @@ func CreateElement(type, x, y, powerUp = null, isExit = false):
 			instance.PowerUpType = 4
 		elif(powerUp == "ExtraLife"):
 			instance.PowerUpType = 8
-		
-	if(isExit == true):
-		instance.HasExit = true
 	
 	add_child(instance)
 	instance.set_pos(GetPositionFromTilePosition(x,y))
@@ -271,6 +273,8 @@ func SpawnEnemy(type, x, y):
 	instance.set_pos(GetPositionFromTilePosition(x,y))
 	instance.TilePosition = Vector2(x,y)
 	enemies.append(instance)
+	
+	return instance
 
 func GetTilePositionFromPosition(position):
 	var x = round((position.x - 16)/32)
