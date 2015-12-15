@@ -6,7 +6,11 @@ func _ready():
 	HitPoints = 1
 	WalkSpeed = 60
 	AILevel = 1
-	
-func OnDeath():
+
+func OnHit():
 	get_node("SamplePlayer2D").play("mushroom_death")
+	.OnHit()
+
+func OnDeath():
+	#get_node("SamplePlayer2D").play("mushroom_death")
 	.OnDeath()

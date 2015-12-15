@@ -14,5 +14,4 @@ func OnTouch():
 	.OnTouch()
 
 func IsSoundFinished():
-	print('error')
 	return !get_node("SamplePlayer2D").is_voice_active(0)
