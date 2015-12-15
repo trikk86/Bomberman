@@ -9,7 +9,7 @@ func _ready():
 
 func OnDeath():
 	hide()
-	get_node("SamplePlayer2D").play("explosion", 0)
+	get_node("SamplePlayer2D").play("explosion")
 	IsExploded = true
 
 func OnEnemiesCleared():

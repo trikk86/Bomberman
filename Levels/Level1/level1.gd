@@ -59,7 +59,8 @@ func PrepareLevel():
 	map.CreateElement("barrel",13,10)
 	
 	map.CreateElement("exit", 1,11)
-	map.SpawnEnemy("Beholder", 2,11)
+	map.SpawnEnemy("Mushroom", 2,11)
+	#map.SpawnEnemy("Beholder", 2,11)
 	map.CreateElement("barrel", 5, 11)
 	map.CreateElement("closedbox",8,11)
 	map.CreateElement("closedbox",9,11, "ExtraLife")

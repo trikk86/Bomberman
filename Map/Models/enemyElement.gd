@@ -20,21 +20,21 @@ func _process(delta):
 func OnHit():
 	if(!isImmune):
 		HitPoints -= 1
-		StartImmunity()
-	if(HitPoints == 0):
-		OnDeath()
+		if(HitPoints == 0):
+			OnDeath()
+		else:
+			StartImmunity()
 
 func OnDeath():
 	isMoving = false
 	DestinationTilePosition = null
-	get_node("BlinkPlayer").stop()
 	show()
 	if(!isDeathAnimationFinished):
 		get_node("AnimationPlayer").play("Die")
 	get_node("Area2D/CollisionShape2D").set_trigger(true)
 	
 func DeathAnimationFinished():
-	if(get_node("AnimationPlayer").get_current_animation() == "Die" && get_node("SamplePlayer2D").is_voice_active(0)):
+	if(get_node("AnimationPlayer").get_current_animation() == "Die"):
 		isDeathAnimationFinished = true
 
 func StartImmunity():

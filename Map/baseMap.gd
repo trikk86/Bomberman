@@ -19,7 +19,7 @@ var closedBoxResource = preload("res://Map/Terrain/closedbox/closedbox.res")
 var powerUpResource = preload("res://Map/Collectibles/powerups/powerup.res")
 var coinResource = preload("res://Map/Collectibles/coin/coin.res")
 
-var goblinResource = preload("res://Resources/goblin/goblin.res")
+var mushroomResource = preload("res://Map/Models/mushroom/mushroom.res")
 var beholderResource = preload("res://Map/Models/beholder/beholder.res")
 
 var bombsResource = preload("res://Map/Terrain/bomb/bomb.res")
@@ -264,8 +264,8 @@ func CreateElement(type, x, y, powerUp = null, isExit = false):
 
 func SpawnEnemy(type, x, y):
 	var instance
-	if(type == "Goblin"):
-		instance = goblinResource.instance()
+	if(type == "Mushroom"):
+		instance = mushroomResource.instance()
 	if(type == "Beholder"):
 		instance = beholderResource.instance()
 		
