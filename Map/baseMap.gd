@@ -24,6 +24,8 @@ var beholderResource = preload("res://Map/Models/beholder/beholder.res")
 
 var bombsResource = preload("res://Map/Terrain/bomb/bomb.res")
 var explosionResource = preload("res://Map/Misc/explosion/explosion.res")
+var explosionRayResource = preload("res://Map/Misc/explosion/explosionray.res")
+var explosionEndResource = preload("res://Map/Misc/explosion/explosionend.res")
 
 var enemies = Array()
 var collectibles = Array()
@@ -212,7 +214,19 @@ func AddNode(type, position, subType = null, subType2 = null):
 		collectibles.append(instance)
 		
 	if(type == "explosion"):
-		instance = explosionResource.instance()
+		if(subType2 == "end"):
+			instance = explosionEndResource.instance()
+		elif(subType2 == "middle"):
+			instance = explosionRayResource.instance()
+		else:
+			instance = explosionResource.instance()
+		if(subType == "left"):
+			instance.set_rot(-PI/2)
+		elif(subType == "right"):
+			instance.set_rot(PI/2)
+		elif(subType == "top"):
+			instance.set_flip_v(true)
+		
 		instance.get_node("Timer").connect("timeout", self, "RemoveNode", [instance])
 		instance.get_node("Timer").start()
 		
@@ -229,7 +243,7 @@ func AddNode(type, position, subType = null, subType2 = null):
 func RemoveNode(node):
 	node.free()
 
-func CreateElement(type, x, y, powerUp = null, isExit = false):
+func CreateElement(type, x, y, powerUp = null):
 	var instance
 	if(type == "chest"):
 		instance = chestResource.instance()

@@ -101,11 +101,11 @@ func CheckTop(explosion):
 			elif(!CheckIfTaken(position) && i+1 < globals.bombRange):
 				var nextPosition = Vector2(position.x, position.y-1)
 				if(CheckIfTaken(nextPosition)):
-					AddNode("explosion", position)
+					AddNode("explosion", position, "top", "end")
 				else:
-					AddNode("explosion", position)
+					AddNode("explosion", position, "top", "middle")
 			elif(!CheckIfTaken(position) && i + 1 == globals.bombRange):
-				AddNode("explosion", position)
+				AddNode("explosion", position, "top", "end")
 			ResolveHit(position)
 
 func CheckBottom(explosion):
@@ -118,11 +118,11 @@ func CheckBottom(explosion):
 			elif(!CheckIfTaken(position) && i+1 < globals.bombRange):
 				var nextPosition = Vector2(position.x, position.y+1)
 				if(CheckIfTaken(nextPosition)):
-					AddNode("explosion", position)
+					AddNode("explosion", position, "bottom", "end")
 				else:
-					AddNode("explosion", position)
+					AddNode("explosion", position, "bottom", "middle")
 			elif(!CheckIfTaken(position) && i + 1 == globals.bombRange):
-				AddNode("explosion", position)
+				AddNode("explosion", position, "bottom", "end")
 			ResolveHit(position)
 
 func CheckLeft(explosion):
@@ -135,11 +135,11 @@ func CheckLeft(explosion):
 			elif(!CheckIfTaken(position) && i+1 < globals.bombRange):
 				var nextPosition = Vector2(position.x - 1, position.y)
 				if(CheckIfTaken(nextPosition)):
-					AddNode("explosion", position)
+					AddNode("explosion", position, "left", "end")
 				else:
-					AddNode("explosion", position)
+					AddNode("explosion", position, "left", "middle")
 			elif(!CheckIfTaken(position) && i + 1 == globals.bombRange):
-				AddNode("explosion", position)
+				AddNode("explosion", position, "left", "end")
 			ResolveHit(position)
 
 func CheckRight(explosion):
@@ -152,11 +152,11 @@ func CheckRight(explosion):
 			elif(!CheckIfTaken(position) && i+1 < globals.bombRange):
 				var nextPosition = Vector2(position.x + 1, position.y)
 				if(CheckIfTaken(nextPosition)):
-					AddNode("explosion", position)
+					AddNode("explosion", position, "right", "end")
 				else:
-					AddNode("explosion", position)
+					AddNode("explosion", position, "right", "middle")
 			elif(!CheckIfTaken(position) && i + 1 == globals.bombRange):
-				AddNode("explosion", position)
+				AddNode("explosion", position, "right", "end")
 			ResolveHit(position)
 
 func MoveEnemies(player, delta):
