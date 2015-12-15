@@ -48,7 +48,7 @@ func MoveDown():
 func MoveLeft():
 	.MoveLeft();
 	if(!get_node("SamplePlayer2D").is_voice_active(0)):
-		get_node("SamplePlayer2D").play("step")
+		get_node("SamplePlayer2D").play("step", 0)
 	
 func MoveRight():
 	.MoveRight();

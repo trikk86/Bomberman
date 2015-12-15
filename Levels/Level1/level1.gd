@@ -1,4 +1,4 @@
-extends "levelBase.gd"
+extends "res://Levels/levelBase.gd"
 
 func _ready():
 	._ready()
@@ -26,7 +26,7 @@ func PrepareLevel():
 	map.CreateElement("barrel",11,3)
 	map.CreateElement("barrel",13,3)
 
-	map.CreateElement("pot",7,4)
+	map.CreateElement("pot",9,4)
 	
 	map.CreateElement("chest",1,5)
 	map.CreateElement("openbox",3,5, "SpeedBoost")
@@ -50,7 +50,7 @@ func PrepareLevel():
 	map.CreateElement("barrel",1,9)
 	map.CreateElement("chest",6,9)
 	map.CreateElement("chest",8,9)
-	map.CreateElement("openbox",11,9, "ExtraLife")
+	map.CreateElement("openbox",11,9, "BombRange")
 	map.CreateElement("barrel", 13,9)
 	
 	map.CreateElement("pot",1,10)
@@ -62,7 +62,7 @@ func PrepareLevel():
 	map.SpawnEnemy("Beholder", 2,11)
 	map.CreateElement("barrel", 5, 11)
 	map.CreateElement("closedbox",8,11)
-	map.CreateElement("closedbox",9,11)
+	map.CreateElement("closedbox",9,11, "ExtraLife")
 	map.CreateElement("openbox",10,11)
 	map.CreateElement("barrel", 12,11)
 	map.CreateElement("barrel", 13,11)

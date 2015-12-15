@@ -34,7 +34,7 @@ func OnDeath():
 	get_node("Area2D/CollisionShape2D").set_trigger(true)
 	
 func DeathAnimationFinished():
-	if(get_node("AnimationPlayer").get_current_animation() == "Die"):
+	if(get_node("AnimationPlayer").get_current_animation() == "Die" && get_node("SamplePlayer2D").is_voice_active(0)):
 		isDeathAnimationFinished = true
 
 func StartImmunity():

@@ -5,7 +5,7 @@ var buttons = {}
 var cursor
 
 func _ready():
-	get_tree().set_pause(false)
+
 	get_node("AnimTimer").connect("timeout", self, "StartAnimation")
 
 	get_node("StreamPlayer").play()
@@ -35,11 +35,13 @@ func _input(event):
 		if(selectedbuttonIndex > 0):
 			cursorPosition.y -= 50
 			selectedbuttonIndex -= 1
+			get_node("SamplePlayer2D").play("click")
 			
 	if(event.is_action("ui_down") && !event.is_echo() && !event.is_pressed()):
 		if(selectedbuttonIndex  < buttons.size() - 1):
 			cursorPosition.y += 50
 			selectedbuttonIndex += 1
+			get_node("SamplePlayer2D").play("click")
 			
 	cursor.set_pos(cursorPosition)
 

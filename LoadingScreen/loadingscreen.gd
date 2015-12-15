@@ -29,5 +29,5 @@ func LoadMap():
 func _input(event):
 	if(event.type == 1):
 		var currentLevel = get_node("/root/Globals").level
-		var levelstringMap = str("res://Levels/level", currentLevel, ".scn")
+		var levelstringMap = str("res://Levels/Level", currentLevel, "/level", currentLevel, ".scn")
 		get_node("/root/ScreenLoader").goto_scene(levelstringMap)

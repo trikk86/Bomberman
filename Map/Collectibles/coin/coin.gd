@@ -10,7 +10,7 @@ func _process(delta):
 
 func OnTouch():
 	if(!IsTouched):
-		get_node("SamplePlayer2D").play("treasure", 0)
+		get_node("SamplePlayer2D").play("treasure")
 	.OnTouch()
 
 
