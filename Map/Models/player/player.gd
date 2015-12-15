@@ -56,5 +56,5 @@ func MoveRight():
 		get_node("SamplePlayer2D").play("step")
 
 func _on_Area2D_area_enter(area):
-	if(area.get_parent() extends enemyElementClass):
+	if(area.get_parent() extends enemyElementClass && area.get_parent().HitPoints > 0):
 		OnHit() 

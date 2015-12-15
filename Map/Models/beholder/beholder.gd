@@ -8,8 +8,9 @@ func _ready():
 	AILevel = 2
 
 func OnHit():
-	get_node("SamplePlayer2D").play("beholder_pain")
 	.OnHit()
+	if(HitPoints != 0):
+		get_node("SamplePlayer2D").play("beholder_pain")
 	
 func OnDeath():
 	get_node("SamplePlayer2D").play("beholder_death")

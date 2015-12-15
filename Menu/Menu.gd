@@ -49,9 +49,9 @@ func _input(event):
 
 func StartProcessing():
 	get_node("Items/NewGame").connect("pressed", self, "NewGame")
+	get_node("Items/HighScores").connect("pressed", self, "HighScores")
 	get_node("Items/Credits").connect("pressed", self, "ShowCredits")
 	get_node("Items/Quit").connect("pressed", self, "Quit")
-
 
 func NewGame():
 	get_node("/root/Globals").points = 0
@@ -62,6 +62,9 @@ func NewGame():
 	get_node("/root/Globals").walkSpeed = 60
 	get_node("/root/Globals").level = 1
 	get_node("/root/ScreenLoader").goto_scene("res://Intro/intro.res")
+	
+func HighScores():
+	get_node("/root/ScreenLoader").goto_scene("res://HighScores/highscores.scn")
 	
 func Quit():
 	get_tree().quit()
