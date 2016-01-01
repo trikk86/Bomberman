@@ -13,7 +13,10 @@ func _ready():
 	set_process(true)
 	get_node("AnimationPlayer").connect("finished", self, "DeathAnimationFinished")
 	
+	
 	get_node("Timer").connect("timeout", self, "OnDeath")
+	get_node("SlowDownTimer").connect("timeout", self, "RestoreSpeed")
+
 
 func _process(delta):
 	if(isImmune && !get_node("BlinkPlayer").is_playing()):
@@ -25,6 +28,7 @@ func OnHit():
 		StartImmunity()
 		if(HitPoints == 0):
 			get_node("Timer").start()
+			
 func OnDeath():
 	isMoving = false
 	DestinationTilePosition = null
@@ -43,3 +47,10 @@ func StartImmunity():
 
 func StopImmunity():
 	isImmune = false
+
+func SlowDown():
+	WalkSpeed = WalkSpeed / 4
+	get_node("SlowDownTimer").start()
+	
+func RestoreSpeed():
+	pass

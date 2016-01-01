@@ -58,3 +58,4 @@ func MoveRight():
 func _on_Area2D_area_enter(area):
 	if(area.get_parent() extends enemyElementClass && area.get_parent().HitPoints > 0):
 		OnHit() 
+		area.get_parent().SlowDown()

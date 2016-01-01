@@ -47,7 +47,8 @@ func CheckIfTaken(pos):
 	
 func ResolveHit(position):
 	if(exit != null && exit.TilePosition == position):
-		SpawnEnemies(position)
+		spawnCount = 3
+		get_node("RespawnTimer").start()
 
 	if(position in board && board[position] != null && board[position].is_visible()):
 		board[position].OnHit()
@@ -70,13 +71,11 @@ func ResolveHit(position):
 				board[position] = null;
 
 func SpawnEnemies(position):
-	var beholder1 = SpawnEnemy("Beholder", position.x,position.y)
-	var beholder2 = SpawnEnemy("Beholder", position.x,position.y)
-	var beholder3 = SpawnEnemy("Beholder", position.x,position.y)
-	
-	beholder1.StartImmunity()
-	beholder2.StartImmunity()
-	beholder3.StartImmunity()
+	if(spawnCount != 0):
+		var instance = SpawnEnemy("Beholder", position.x, position.y)
+		spawnCount -=1
+	else:
+		get_node("RespawnTimer").stop()
 
 func BombExplode(bomb):
 	var explosion = AddNode("explosion", bomb.TilePosition, "main")

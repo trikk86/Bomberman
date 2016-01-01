@@ -10,6 +10,7 @@ var globals
 #state
 
 var isOver = false
+var isPaused = false
 
 var TimeLeft = 240
 
@@ -18,7 +19,9 @@ func _ready():
 	timer = get_node("Timer")
 	hud = get_node("HUD")
 	player = get_node("Player")
+	get_node("Pause").hide()
 	
+	set_process_input(true)
 	globals = get_tree().get_root().get_node("/root/Globals")
 	
 	player.TilePosition = Vector2(7,1)
@@ -26,9 +29,11 @@ func _ready():
 	player.set_pos(map.GetPositionFromTilePosition(7,1))
 	
 	set_fixed_process(true)
-	set_process_input(true)
-	pass
+	get_node("InputTimer").connect("timeout", self, "EnablePause")
 	
+	timer.connect("timeout", self, "UpdateTime")
+	timer.start()
+
 func _fixed_process(delta):
 	CheckFinish()
 	hud.UpdateHUD(globals.playerLifes, TimeLeft, globals.points)
@@ -38,11 +43,11 @@ func _fixed_process(delta):
 	CheckInput()
 		
 func _input(event):
-	if(event.type == 1 && !event.is_pressed() && event.scancode == KEY_ESCAPE && !event.is_echo()):
-		if(get_tree().is_paused()):
-			UnpauseGame()
-		else:
-			PauseGame()
+	if(event.type == 1 && !event.is_pressed() && event.scancode == KEY_ESCAPE && !event.is_echo() && !isPaused):
+		PauseGame()
+		
+	if(event.type == 1 && event.is_pressed() && event.scancode == KEY_SPACE && !event.is_echo() && globals.maxBombCount > GetActiveBombCount()  && player.isReloading == false):
+		PlaceBomb(player.BombPosition)
 
 func CheckInput():
 	var newPosition = Vector2()
@@ -67,9 +72,6 @@ func CheckInput():
 		if(!map.CheckIfTaken(newPosition)):
 			player.DestinationTilePosition = newPosition
 
-	if(Input.is_action_pressed("place_bomb") && globals.maxBombCount > GetActiveBombCount()  && player.isReloading == false):
-		PlaceBomb(player.BombPosition)
-
 func GetActiveBombCount():
 	var counter = 0
 	for bomb in map.bombs:
@@ -89,10 +91,11 @@ func PlaceBomb(position):
 func CheckFinish():
 	if(globals.playerLifes == 0 && !isOver):
 		GameOver()
+		
 	if(map.enemies.size() == 0 ):
 		if(map.exit != null):
 			if(player.TilePosition == map.exit.TilePosition):
-				set_pause_mode(true)
+				set_process_input(false)
 				timer.stop()
 				if(TimeLeft > 0):
 					globals.points += 1
@@ -106,15 +109,21 @@ func UpdateTime():
 	if(TimeLeft == 0):
 		GameOver()
 
+func EnablePause():
+	isPaused = false
+
 func PauseGame():
-	get_tree().set_pause(true)
+	isPaused = true
 	get_node("Pause").show()
 	get_node("Timer").stop()
+	get_tree().set_pause(true)
 
 func UnpauseGame():
-	get_tree().set_pause(false)
+	get_node("InputTimer").start()
 	get_node("Pause").hide()
-	get_node("Timer").start()
+	get_tree().set_pause(false)
+	
+	timer.start()
 
 func GameOver():
 	get_node("GameOver").show()

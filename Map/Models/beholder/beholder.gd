@@ -15,3 +15,6 @@ func OnHit():
 func OnDeath():
 	get_node("SamplePlayer2D").play("beholder_death")
 	.OnDeath()
+	
+func RestoreSpeed():
+	WalkSpeed = 60

@@ -1,12 +1,7 @@
 extends "res://Levels/levelBase.gd"
 
 func _ready():
-	._ready()
 	PrepareLevel()
-	
-	timer.connect("timeout", self, "UpdateTime")
-
-	timer.start()
 
 func PrepareLevel():
 	map.CreateElement("barrel",1,1)

@@ -8,15 +8,11 @@ func _ready():
 	get_tree().set_pause(false)
 	get_node("AnimTimer").connect("timeout", self, "StartAnimation")
 
-	get_node("StreamPlayer").play()
-	
 	get_node("Items/NewGame").SetText("new game")
 	get_node("Items/HighScores").SetText("highscores")
 	get_node("Items/Credits").SetText("credits")
 	get_node("Items/Quit").SetText("quit")
 	get_node("ConnectTimer").connect("timeout", self, "StartProcessing")
-	
-	get_node("StreamPlayer").play()
 	
 	buttons[0] = get_node("Items/NewGame")
 	buttons[1] = get_node("Items/HighScores")

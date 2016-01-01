@@ -33,6 +33,8 @@ var bombs = Array()
 
 var exit = null
 
+var spawnCount = 0
+
 func _ready():
 	globals = get_tree().get_root().get_node("/root/Globals")
 	
@@ -42,6 +44,7 @@ func _ready():
 				CreateElement("column",i,j)
 
 	set_fixed_process(true)
+
 
 #Pathing
 
@@ -154,7 +157,7 @@ func MoveNode(node, delta):
 		node.TilePosition = node.DestinationTilePosition
 		node.DestinationTilePosition = null
 		node.isMoving = false
-		node.set_z(node.TilePosition.y + 1)
+		node.set_z(node.TilePosition.y + 2)
 		
 		if(node.isPlayer):
 			node.BombPosition = Vector2(node.TilePosition.x, node.TilePosition.y)
@@ -170,7 +173,7 @@ func MoveNode(node, delta):
 			if(node.DestinationTilePosition != null):
 				CheckTile(node.DestinationTilePosition)
 				node.BombPosition = Vector2(node.DestinationTilePosition.x, node.DestinationTilePosition.y)
-				node.set_z(node.DestinationTilePosition.y + 1)
+				node.set_z(node.DestinationTilePosition.y + 2)
 		else:
 			node.BombPosition = Vector2(node.TilePosition.x, node.TilePosition.y)
 	

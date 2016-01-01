@@ -11,6 +11,6 @@ func _ready():
 func _input(event):
 	if(is_visible()):
 		if(event.type == 1):
-			get_node("/root/ScreenLoader").goto_scene("res://Menu/menu.scn")
+			get_node("/root/ScreenLoader").goto_scene("res://Menu/menu.res")
 
 
