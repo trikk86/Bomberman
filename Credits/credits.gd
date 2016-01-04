@@ -7,4 +7,4 @@ func _ready():
 	
 func _input(event):
 	if(event.type == InputEvent.KEY):
-		get_node("/root/ScreenLoader").goto_scene("res://Menu/Menu.scn")
+		get_node("/root/ScreenLoader").goto_scene("res://Menu/Menu.res")

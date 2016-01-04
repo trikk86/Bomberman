@@ -11,6 +11,7 @@ var globals
 
 var isOver = false
 var isPaused = false
+var isComplete = false
 
 var TimeLeft = 240
 
@@ -37,10 +38,11 @@ func _ready():
 func _fixed_process(delta):
 	CheckFinish()
 	hud.UpdateHUD(globals.playerLifes, TimeLeft, globals.points)
-	if(player.DestinationTilePosition != null):
-		map.MoveNode(player, delta)
-	map.MoveEnemies(player, delta)
-	CheckInput()
+	if(!isComplete):
+		if(player.DestinationTilePosition != null):
+			map.MoveNode(player, delta)
+		map.MoveEnemies(player, delta)
+		CheckInput()
 		
 func _input(event):
 	if(event.type == 1 && !event.is_pressed() && event.scancode == KEY_ESCAPE && !event.is_echo() && !isPaused):
@@ -97,12 +99,14 @@ func CheckFinish():
 			if(player.TilePosition == map.exit.TilePosition):
 				set_process_input(false)
 				timer.stop()
-				if(TimeLeft > 0):
-					globals.points += 1
-					TimeLeft -= 1
-				else:
-					globals.level += 1
-				#get_node("/root/ScreenLoader").goto_scene("res://Resources/levelsplash/levelsplash.res")
+				isComplete = true
+				get_node("LevelComplete").show()
+				get_node("LevelComplete").Complete(TimeLeft)
+				get_tree().set_pause(true)
+
+func OnFinished():
+	get_tree().set_pause(false)
+	
 
 func UpdateTime():
 	TimeLeft -= 1

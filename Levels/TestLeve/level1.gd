@@ -54,16 +54,11 @@ func PrepareLevel():
 	map.CreateElement("barrel",13,10)
 	
 	map.CreateElement("exit", 1,11)
-	map.SpawnEnemy("Mushroom", 2,11)
-	#map.SpawnEnemy("Beholder", 2,11)
+	#map.SpawnEnemy("Mushroom", 2,11)
+	map.SpawnEnemy("Beholder", 2,11)
 	map.CreateElement("barrel", 5, 11)
 	map.CreateElement("closedbox",8,11)
 	map.CreateElement("closedbox",9,11, "ExtraLife")
 	map.CreateElement("openbox",10,11)
 	map.CreateElement("barrel", 12,11)
 	map.CreateElement("barrel", 13,11)
-	
-func OnFinished():
-	.OnFinished()
-	get_node("/root/ScreenLoader").goto_scene("res://LoadingScreen/loadingscreen.scn")
-	

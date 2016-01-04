@@ -61,3 +61,7 @@ func PrepareLevel():
 	map.CreateElement("pot",11,11)
 	map.SpawnEnemy("Mushroom", 12,11)
 	map.CreateElement("exit",13,11)
+	
+func OnFinished():
+	.OnFinished()
+	get_node("/root/ScreenLoader").goto_scene("res://Outro/outro.res")

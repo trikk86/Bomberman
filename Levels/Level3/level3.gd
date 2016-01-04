@@ -9,16 +9,16 @@ func PrepareLevel():
 	map.CreateElement("barrel",1,3, "BombRange")
 	map.CreateElement("closedbox",1,5)
 	map.CreateElement("chest",1,6)
-	map.SpawnEnemy("Goblin", 1,7)
+	map.SpawnEnemy("Mushroom", 1,7)
 	map.CreateElement("chest",1,8)
 	map.CreateElement("closedbox",1,9, "ExtraBomb")
-	map.CreateElement("barrel", 1, 11)
+	map.CreateElement("exit", 1, 11)
 	
 	map.CreateElement("barrel",2,1)
 	map.CreateElement("closedbox",2,7)
 	
 	map.CreateElement("barrel",3,1)
-	map.SpawnEnemy("Goblin", 3,3)
+	map.SpawnEnemy("Mushroom", 3,3)
 	map.CreateElement("openbox",3,5)
 	map.CreateElement("barrel", 3,9, "ExtraLife")
 	map.CreateElement("barrel", 3,11)
@@ -52,7 +52,7 @@ func PrepareLevel():
 	map.CreateElement("closedbox", 10,7)
 	map.SpawnEnemy("Beholder", 10,11)
 	
-	map.SpawnEnemy("Goblin", 11, 1)
+	map.SpawnEnemy("Mushroom", 11, 1)
 	map.CreateElement("pot", 11, 2)
 	map.CreateElement("closedbox", 11, 7)
 	map.CreateElement("closedbox", 11, 8)
@@ -64,7 +64,11 @@ func PrepareLevel():
 	map.CreateElement("pot", 12, 9)
 	
 	map.CreateElement("chest", 13,1)
-	map.SpawnEnemy("Goblin", 13, 4)
-	map.SpawnEnemy("Goblin", 13, 8)
+	map.SpawnEnemy("Mushroom", 13, 4)
+	map.SpawnEnemy("Mushroom", 13, 8)
 	map.CreateElement("pot", 13, 9)
 	map.CreateElement("closedbox", 13, 11)
+	
+func OnFinished():
+	.OnFinished()
+	

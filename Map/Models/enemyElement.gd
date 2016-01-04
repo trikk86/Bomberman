@@ -13,7 +13,6 @@ func _ready():
 	set_process(true)
 	get_node("AnimationPlayer").connect("finished", self, "DeathAnimationFinished")
 	
-	
 	get_node("Timer").connect("timeout", self, "OnDeath")
 	get_node("SlowDownTimer").connect("timeout", self, "RestoreSpeed")
 

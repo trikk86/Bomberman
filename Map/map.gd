@@ -1,5 +1,8 @@
 extends "res://Map/baseMap.gd"
 
+func _ready():
+	get_node("RespawnTimer").connect("timeout", self, "SpawnEnemies")
+
 func _fixed_process(delta):
 	if(enemies.size() == 0):
 		for item in board:
@@ -70,9 +73,9 @@ func ResolveHit(position):
 					board[position].free()
 				board[position] = null;
 
-func SpawnEnemies(position):
+func SpawnEnemies():
 	if(spawnCount != 0):
-		var instance = SpawnEnemy("Beholder", position.x, position.y)
+		var instance = SpawnEnemy("Beholder", exit.TilePosition.x, exit.TilePosition.y)
 		spawnCount -=1
 	else:
 		get_node("RespawnTimer").stop()

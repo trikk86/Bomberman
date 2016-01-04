@@ -244,7 +244,8 @@ func AddNode(type, position, subType = null, subType2 = null):
 	return instance
 
 func RemoveNode(node):
-	node.free()
+	if(node != null):
+		node.free()
 
 func CreateElement(type, x, y, powerUp = null):
 	var instance
@@ -290,7 +291,7 @@ func SpawnEnemy(type, x, y):
 	instance.set_pos(GetPositionFromTilePosition(x,y))
 	instance.TilePosition = Vector2(x,y)
 	enemies.append(instance)
-	
+	instance.set_z(y)
 	return instance
 
 func GetTilePositionFromPosition(position):
