@@ -8,7 +8,8 @@ var IsBomb = false
 var IsDelayedDeath = false
 
 func OnHit():
-	HitPoints -= 1
+	if(is_visible()):
+		HitPoints -= 1
 
 func OnDeath():
 	pass

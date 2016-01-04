@@ -12,18 +12,18 @@ func _fixed_process(delta):
 	for bomb in bombs:
 		if(bomb.is_visible() == 0 && bomb.IsExploded && !bomb.get_node("SamplePlayer2D").is_voice_active(0)):
 			bombs.erase(bomb)
-			bomb.free()
+			bomb.queue_free()
 			
 	for enemy in enemies:
 		if(enemy.HitPoints == 0 && enemy.isDeathAnimationFinished):
 			globals.points += enemy.Points
 			enemies.erase(enemy)
-			enemy.free()
+			enemy.queue_free()
 			
 	for collectible in collectibles:
 		if(collectible.IsTouched && collectible.IsSoundFinished()):
 			collectibles.erase(collectible)
-			collectible.free()
+			collectible.queue_free()
 
 func CheckTile(tilePosition):
 	for collectible in collectibles:
@@ -70,7 +70,7 @@ func ResolveHit(position):
 			else:
 				board[position].OnDeath()
 				if(!board[position].IsDelayedDeath && !board[position].IsBomb):
-					board[position].free()
+					board[position].queue_free()
 				board[position] = null;
 
 func SpawnEnemies():

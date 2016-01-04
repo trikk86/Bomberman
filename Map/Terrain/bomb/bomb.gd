@@ -8,6 +8,7 @@ func _ready():
 	IsDelayedDeath = true
 
 func OnDeath():
+	get_node("Timer").stop()
 	hide()
 	get_node("SamplePlayer2D").play("explosion")
 	IsExploded = true

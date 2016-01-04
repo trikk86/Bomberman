@@ -107,7 +107,6 @@ func CheckFinish():
 func OnFinished():
 	get_tree().set_pause(false)
 	
-
 func UpdateTime():
 	TimeLeft -= 1
 	if(TimeLeft == 0):

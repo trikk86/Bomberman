@@ -153,7 +153,23 @@ func MoveNode(node, delta):
 	var nodeDestinationPixelPosition = GetPositionFromTilePosition(node.DestinationTilePosition.x, node.DestinationTilePosition.y)
 	var nodePosition = node.get_pos()
 	
-	if(nodePosition == nodeDestinationPixelPosition):
+	var stop = false
+	
+	if(node.direction == "up" && nodePosition.y <= nodeDestinationPixelPosition.y):
+		stop = true
+		
+	if(node.direction == "down" && nodePosition.y >= nodeDestinationPixelPosition.y):
+		stop = true
+		
+	if(node.direction == "left" && nodePosition.x <= nodeDestinationPixelPosition.x):
+		stop = true
+		
+	if(node.direction == "right" && nodePosition.x >= nodeDestinationPixelPosition.x):
+		stop = true
+	
+	if(stop):
+		node.set_pos(nodeDestinationPixelPosition)
+		node.direction = null
 		node.TilePosition = node.DestinationTilePosition
 		node.DestinationTilePosition = null
 		node.isMoving = false
@@ -244,8 +260,7 @@ func AddNode(type, position, subType = null, subType2 = null):
 	return instance
 
 func RemoveNode(node):
-	if(node != null):
-		node.free()
+	node.queue_free()
 
 func CreateElement(type, x, y, powerUp = null):
 	var instance

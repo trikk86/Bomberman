@@ -71,4 +71,5 @@ func PrepareLevel():
 	
 func OnFinished():
 	.OnFinished()
+	get_node("/root/ScreenLoader").goto_scene("res://Outro/outro.res")
 	
