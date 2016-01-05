@@ -2,7 +2,8 @@ extends Node2D
 
 func _ready():
 	get_node("AnimationPlayer").play("Roll")
-	get_node("Timer").connect("timeout", self, "StartProcesing")
+	get_node("Timer").connect("timeout", self, "StartProcessing")
+	get_node("Timer").start()
 	
 func StartProcessing():
 	set_process_input(true)

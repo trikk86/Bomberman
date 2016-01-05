@@ -10,12 +10,13 @@ var AILevel = 1
 func _ready():
 	immunityTimer = get_node("ImmunityTimer")
 	immunityTimer.connect("timeout", self, "StopImmunity")
-	set_process(true)
+	
 	get_node("AnimationPlayer").connect("finished", self, "DeathAnimationFinished")
 	
 	get_node("Timer").connect("timeout", self, "OnDeath")
 	get_node("SlowDownTimer").connect("timeout", self, "RestoreSpeed")
-
+	
+	set_process(true)
 
 func _process(delta):
 	if(isImmune && !get_node("BlinkPlayer").is_playing()):

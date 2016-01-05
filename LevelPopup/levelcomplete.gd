@@ -12,7 +12,8 @@ func _ready():
 	globals = get_tree().get_root().get_node("/root/Globals")
 	timeLabel = get_node("TimeLeftValue")
 	scoreLabel = get_node("ScoreValue")
-	get_node("DelayTimer").connect("timeout", self, "StartCalculation")
+	get_node("StartTimer").connect("timeout", self, "StartCalculation")
+	get_node("DelayTimer").connect("timeout", self, "Calculate")
 	set_process(true)
 
 func _process(delta):
@@ -20,6 +21,9 @@ func _process(delta):
 	scoreLabel.set_text(str(globals.points))
 
 func StartCalculation():
+	get_node("DelayTimer").start()
+
+func Calculate():
 	if(!isComplete):
 		if(TimeLeft > 0):
 			globals.points += 2
@@ -35,8 +39,9 @@ func _input(event):
 		get_parent().OnFinished()
 
 func Complete(levelTime):
+	get_node("StartTimer").start()
 	TimeLeft = levelTime
-	get_node("DelayTimer").start()
+	
 
 func FormatTime(timeLeft):
 	var minutes = int(timeLeft) / 60
