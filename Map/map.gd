@@ -1,5 +1,6 @@
 extends "res://Map/baseMap.gd"
 
+
 func _ready():
 	get_node("RespawnTimer").connect("timeout", self, "SpawnEnemies")
 
@@ -37,7 +38,8 @@ func CheckTile(tilePosition):
 				globals.isSpeedBoostScheduled = true
 			elif(collectible.PowerUpType == 8 && globals.playerLifes < globals.playerMaxLifes):
 				globals.playerLifes += 1
-
+			elif(collectible.PowerUpType == 16):
+				globals.remoteDetonation = true
 			collectible.hide()
 			collectible.OnTouch()
 
@@ -48,14 +50,13 @@ func CheckIfTaken(pos):
 		return true
 	return false
 	
-func ResolveHit(position):
+func ResolveHit(side, position):
 	if(exit != null && exit.TilePosition == position):
 		spawnCount = 3
 		get_node("RespawnTimer").start()
 
 	if(position in board && board[position] != null && board[position].is_visible()):
 		board[position].OnHit()
-		
 		if(board[position].HitPoints == 0):
 			if(board[position].PowerUpType > 0):
 				AddNode("powerup", position, board[position].PowerUpType)
@@ -66,7 +67,7 @@ func ResolveHit(position):
 			
 			if(board[position].IsBomb):
 				if(!board[position].IsExploded):
-					BombExplode(board[position])
+					BombExplode(board[position], side)
 			else:
 				board[position].OnDeath()
 				if(!board[position].IsDelayedDeath && !board[position].IsBomb):
@@ -80,18 +81,22 @@ func SpawnEnemies():
 	else:
 		get_node("RespawnTimer").stop()
 
-func BombExplode(bomb):
+func BombExplode(bomb, side = null):
 	var explosion = AddNode("explosion", bomb.TilePosition, "main")
 	bomb.IsBlocking = false
 	board[bomb.TilePosition] = null;
 	bomb.OnDeath()
-	ShowExplosionRays(explosion)
+	ShowExplosionRays(explosion, side)
 
-func ShowExplosionRays(explosion):
-	CheckTop(explosion)
-	CheckBottom(explosion)
-	CheckLeft(explosion)
-	CheckRight(explosion)
+func ShowExplosionRays(explosion, side = null):
+	if(!side == "top"):
+		CheckTop(explosion)
+	if(!side == "bottom"):
+		CheckBottom(explosion)
+	if(!side == "left"):
+		CheckLeft(explosion)
+	if(!side == "right"):
+		CheckRight(explosion)
 	
 func CheckTop(explosion):
 	var finished = false
@@ -108,7 +113,7 @@ func CheckTop(explosion):
 					AddNode("explosion", position, "top", "middle")
 			elif(!CheckIfTaken(position) && i + 1 == globals.bombRange):
 				AddNode("explosion", position, "top", "end")
-			ResolveHit(position)
+			ResolveHit("bottom", position)
 
 func CheckBottom(explosion):
 	var finished = false
@@ -125,7 +130,7 @@ func CheckBottom(explosion):
 					AddNode("explosion", position, "bottom", "middle")
 			elif(!CheckIfTaken(position) && i + 1 == globals.bombRange):
 				AddNode("explosion", position, "bottom", "end")
-			ResolveHit(position)
+			ResolveHit("top", position)
 
 func CheckLeft(explosion):
 	var finished = false
@@ -142,7 +147,7 @@ func CheckLeft(explosion):
 					AddNode("explosion", position, "left", "middle")
 			elif(!CheckIfTaken(position) && i + 1 == globals.bombRange):
 				AddNode("explosion", position, "left", "end")
-			ResolveHit(position)
+			ResolveHit("right", position)
 
 func CheckRight(explosion):
 	var finished = false
@@ -159,7 +164,7 @@ func CheckRight(explosion):
 					AddNode("explosion", position, "right", "middle")
 			elif(!CheckIfTaken(position) && i + 1 == globals.bombRange):
 				AddNode("explosion", position, "right", "end")
-			ResolveHit(position)
+			ResolveHit("left", position)
 
 func MoveEnemies(player, delta):
 	var destinationPosition

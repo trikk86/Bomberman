@@ -4,6 +4,7 @@ const BombRange= 1
 const ExtraBomb = 2
 const SpeedBoost = 4
 const ExtraLife = 8
+const RemoteDetonation = 16
 
 func _ready():
 	get_node("PopAnimationPlayer").play("Pop")
@@ -14,24 +15,25 @@ func _process(delta):
 		get_node("AnimationPlayer").play("Blink")
 
 func SetPowerUpType(type):
+	var texture
 	if(type == BombRange):
-		var bombRangeRes = load("res://Map/Collectibles/powerups/pup_range.png")
-		set_texture(bombRangeRes)
+		texture = load("res://Map/Collectibles/powerups/pup_range.png")
 		PowerUpType = 1
 		
 	elif(type == ExtraBomb):
-		var bombRangeRes = load("res://Map/Collectibles/powerups/pup_bomb.png")
-		set_texture(bombRangeRes)
+		texture = load("res://Map/Collectibles/powerups/pup_bomb.png")
 		PowerUpType = 2
-		
 	elif(type == SpeedBoost):
-		var bombRangeRes = load("res://Map/Collectibles/powerups/pup_speed.png")
-		set_texture(bombRangeRes)
+		texture = load("res://Map/Collectibles/powerups/pup_speed.png")
 		PowerUpType = 4	
-	else:
-		var bombRangeRes = load("res://Map/Collectibles/powerups/pup_life.png")
-		set_texture(bombRangeRes)
+	elif(type == ExtraLife):
+		texture = load("res://Map/Collectibles/powerups/pup_life.png")
 		PowerUpType = 8
+	elif(type == RemoteDetonation):
+		texture = load("res://Map/Collectibles/powerups/pup_life.png")
+		PowerUpType = 16
+		
+	set_texture(texture)
 
 func OnTouch():
 	if(!IsTouched):

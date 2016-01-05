@@ -11,4 +11,6 @@ var bombRange = 4
 var isSpeedBoostScheduled = false  
 var walkSpeed = 75
 
+var remoteDetonation = true
+
 var level = 1

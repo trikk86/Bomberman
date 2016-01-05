@@ -219,8 +219,11 @@ func AddNode(type, position, subType = null, subType2 = null):
 	if(type == "bomb"):
 		instance = bombsResource.instance()
 		bombs.append(instance)
-		instance.get_node("Timer").connect("timeout", self, "BombExplode", [instance])
-		instance.get_node("Timer").start()
+		if(!globals.remoteDetonation):
+			instance.get_node("Timer").connect("timeout", self, "BombExplode", [instance])
+			instance.get_node("Timer").start()
+		else:
+			instance.IsRemoteDetonated = true
 		board[position] = instance
 		
 	if(type == "coin"):

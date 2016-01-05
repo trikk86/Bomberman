@@ -57,6 +57,7 @@ func NewGame():
 	get_node("/root/Globals").maxBombCount = 1
 	get_node("/root/Globals").walkSpeed = 60
 	get_node("/root/Globals").level = 1
+	get_node("/root/Globals").remoteDetonation = false
 	get_node("/root/ScreenLoader").goto_scene("res://Intro/intro.res")
 	
 func HighScores():

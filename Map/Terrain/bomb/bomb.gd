@@ -1,6 +1,7 @@
 extends "res://Map/Terrain/terrainTileElement.gd"
 
 var IsExploded = false
+var IsRemoteDetonated = false
 
 func _ready():
 	get_node("AnimationPlayer").play("Explode")
