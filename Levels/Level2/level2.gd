@@ -5,7 +5,7 @@ func _ready():
 
 func PrepareLevel():
 	map.CreateElement("barrel",1,1)
-	map.CreateElement("barrel",2,1)
+	map.CreateElement("barrel",2,1, "RemoteDetonation")
 	map.CreateElement("barrel",4,1)
 	map.CreateElement("barrel",5,1)
 	

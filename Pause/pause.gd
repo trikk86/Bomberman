@@ -43,7 +43,7 @@ func _input(event):
 			get_parent().UnpauseGame()
 
 func MainMenu():
-	get_node("/root/ScreenLoader").goto_scene("res://Menu/menu.scn")
+	get_node("/root/ScreenLoader").goto_scene("res://Menu/menu.res")
 
 func Quit():
 	get_tree().quit()

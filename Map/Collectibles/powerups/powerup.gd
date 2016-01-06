@@ -30,7 +30,7 @@ func SetPowerUpType(type):
 		texture = load("res://Map/Collectibles/powerups/pup_life.png")
 		PowerUpType = 8
 	elif(type == RemoteDetonation):
-		texture = load("res://Map/Collectibles/powerups/pup_life.png")
+		texture = load("res://Map/Collectibles/powerups/pup_remote.png")
 		PowerUpType = 16
 		
 	set_texture(texture)

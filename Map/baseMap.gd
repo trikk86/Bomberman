@@ -291,6 +291,8 @@ func CreateElement(type, x, y, powerUp = null):
 			instance.PowerUpType = 4
 		elif(powerUp == "ExtraLife"):
 			instance.PowerUpType = 8
+		elif(powerUp == "RemoteDetonation"):
+			instance.PowerUpType = 16
 	
 	add_child(instance)
 	instance.set_pos(GetPositionFromTilePosition(x,y))
