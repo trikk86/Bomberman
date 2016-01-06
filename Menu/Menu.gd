@@ -6,19 +6,22 @@ var cursor
 
 func _ready():
 	get_node("Dialog").hide()
+	get_node("Info").hide()
 	get_tree().set_pause(false)
 	get_node("AnimTimer").connect("timeout", self, "StartAnimation")
 
 	get_node("Items/NewGame").SetText("new game")
 	get_node("Items/HighScores").SetText("highscores")
+	get_node("Items/Help").SetText("help")
 	get_node("Items/Credits").SetText("credits")
 	get_node("Items/Quit").SetText("quit")
 	get_node("ConnectTimer").connect("timeout", self, "StartProcessing")
 	
 	buttons[0] = get_node("Items/NewGame")
 	buttons[1] = get_node("Items/HighScores")
-	buttons[2] = get_node("Items/Credits")
-	buttons[3] = get_node("Items/Quit")
+	buttons[2] = get_node("Items/Help")
+	buttons[3] = get_node("Items/Credits")
+	buttons[4] = get_node("Items/Quit")
 
 	cursor = get_node("Cursor")
 
@@ -47,6 +50,7 @@ func _input(event):
 func StartProcessing():
 	get_node("Items/NewGame").connect("pressed", self, "NewGame")
 	get_node("Items/HighScores").connect("pressed", self, "HighScores")
+	get_node("Items/Help").connect("pressed", self, "Help")
 	get_node("Items/Credits").connect("pressed", self, "ShowCredits")
 	get_node("Items/Quit").connect("pressed", self, "Quit")
 
@@ -63,7 +67,20 @@ func NewGame():
 	
 func HighScores():
 	get_node("/root/ScreenLoader").goto_scene("res://HighScores/highscores.scn")
-	
+
+func Help():
+	get_node("Info").show()
+	set_process_input(false)
+	get_node("Info").Enable()
+	get_node("Cursor").hide()
+
+func HelpResume():
+	get_node("Info").hide()
+	set_process_input(true)
+	get_node("Info").Disable()
+	get_node("Cursor").show()
+
+
 func Quit():
 	get_node("Dialog").show()
 	set_process_input(false)
