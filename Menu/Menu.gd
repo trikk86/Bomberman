@@ -70,7 +70,7 @@ func Quit():
 	get_node("Dialog").Enable()
 	get_node("Cursor").hide()
 	
-func Resume():
+func QuitResume():
 	get_node("Dialog").hide()
 	set_process_input(true)
 	get_node("Dialog").Disable()

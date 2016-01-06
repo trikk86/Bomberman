@@ -14,3 +14,6 @@ var walkSpeed = 75
 var remoteDetonation = true
 
 var level = 1
+
+func _ready():
+	Input.set_mouse_mode(1)
