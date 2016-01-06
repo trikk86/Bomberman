@@ -33,27 +33,27 @@ func OnHit():
 		immunityTimer.start()
 		isImmune = true
 		get_node("BlinkPlayer").play("Blink")
-		get_node("SamplePlayer2D").play("dmg")
+		get_node("SamplePlayer").play("dmg")
 
 func MoveUp():
 	.MoveUp();
-	if(!get_node("SamplePlayer2D").is_voice_active(0)):
-		get_node("SamplePlayer2D").play("step")
+	if(!get_node("SamplePlayer").is_active()):
+		get_node("SamplePlayer").play("step")
 
 func MoveDown():
 	.MoveDown();
-	if(!get_node("SamplePlayer2D").is_voice_active(0)):
-		get_node("SamplePlayer2D").play("step")
+	if(!get_node("SamplePlayer").is_active()):
+		get_node("SamplePlayer").play("step")
 	
 func MoveLeft():
 	.MoveLeft();
-	if(!get_node("SamplePlayer2D").is_voice_active(0)):
-		get_node("SamplePlayer2D").play("step", 0)
+	if(!get_node("SamplePlayer").is_active()):
+		get_node("SamplePlayer").play("step", 0)
 	
 func MoveRight():
 	.MoveRight();
-	if(!get_node("SamplePlayer2D").is_voice_active(0)):
-		get_node("SamplePlayer2D").play("step")
+	if(!get_node("SamplePlayer").is_active()):
+		get_node("SamplePlayer").play("step")
 
 func _on_Area2D_area_enter(area):
 	if(area.get_parent() extends enemyElementClass && area.get_parent().HitPoints > 0):

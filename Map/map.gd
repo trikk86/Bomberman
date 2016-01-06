@@ -11,7 +11,7 @@ func _fixed_process(delta):
 				board[item].OnEnemiesCleared()
 				
 	for bomb in bombs:
-		if(bomb.is_visible() == 0 && bomb.IsExploded && !bomb.get_node("SamplePlayer2D").is_voice_active(0)):
+		if(bomb.is_visible() == 0 && bomb.IsExploded && !bomb.get_node("SamplePlayer").is_active()):
 			bombs.erase(bomb)
 			bomb.queue_free()
 			

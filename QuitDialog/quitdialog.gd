@@ -8,12 +8,12 @@ func _input(event):
 	if(event.is_action("ui_left") && !event.is_echo() && !event.is_pressed() && selected != "left"):
 		selected = "left"
 		cursorPosition.x -= 150
-		get_node("SamplePlayer2D").play("click")
+		get_node("SamplePlayer").play("click")
 			
 	if(event.is_action("ui_right") && !event.is_echo() && !event.is_pressed() && selected != "right"):
 		cursorPosition.x += 150
 		selected = "right"
-		get_node("SamplePlayer2D").play("click")
+		get_node("SamplePlayer").play("click")
 			
 	get_node("Cursor").set_pos(cursorPosition)
 

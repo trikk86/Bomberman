@@ -37,8 +37,8 @@ func SetPowerUpType(type):
 
 func OnTouch():
 	if(!IsTouched):
-		get_node("SamplePlayer2D").play("power_up")
+		get_node("SamplePlayer").play("power_up")
 	.OnTouch()
 
 func IsSoundFinished():
-	return !get_node("SamplePlayer2D").is_voice_active(0)
+	return !get_node("SamplePlayer").is_active()

@@ -10,8 +10,8 @@ func _process(delta):
 
 func OnTouch():
 	if(!IsTouched):
-		get_node("SamplePlayer2D").play("treasure")
+		get_node("SamplePlayer").play("treasure")
 	.OnTouch()
 
 func IsSoundFinished():
-	return !get_node("SamplePlayer2D").is_voice_active(0)
+	return !get_node("SamplePlayer").is_active()

@@ -11,7 +11,7 @@ func OnHit():
 	.OnHit()
 
 func OnDeath():
-	get_node("SamplePlayer2D").play("mushroom_death")
+	get_node("SamplePlayer").play("mushroom_death")
 	.OnDeath()
 	
 func RestoreSpeed():

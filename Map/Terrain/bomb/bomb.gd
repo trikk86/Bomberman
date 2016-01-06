@@ -11,7 +11,7 @@ func _ready():
 func OnDeath():
 	get_node("Timer").stop()
 	hide()
-	get_node("SamplePlayer2D").play("explosion")
+	get_node("SamplePlayer").play("explosion")
 	IsExploded = true
 
 func OnEnemiesCleared():
