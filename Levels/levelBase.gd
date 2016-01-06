@@ -50,7 +50,7 @@ func _input(event):
 		
 	if(event.type == 1 && event.is_pressed() && event.scancode == KEY_SPACE && !event.is_echo() && globals.maxBombCount > GetActiveBombCount()  && player.isReloading == false):
 		PlaceBomb(player.BombPosition)
-	if(event.type == 1 && event.is_pressed() && event.scancode == KEY_RETURN && !event.is_echo() && globals.remoteDetonation && map.bombs.size() > 0):
+	if(event.type == 1 && event.is_pressed() && event.scancode == KEY_SHIFT && !event.is_echo() && globals.remoteDetonation && map.bombs.size() > 0):
 		for bomb in map.bombs:
 			if(bomb.IsRemoteDetonated && !bomb.IsExploded):
 				map.BombExplode(bomb)

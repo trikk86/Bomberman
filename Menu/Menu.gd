@@ -5,6 +5,7 @@ var buttons = {}
 var cursor
 
 func _ready():
+	get_node("Dialog").hide()
 	get_tree().set_pause(false)
 	get_node("AnimTimer").connect("timeout", self, "StartAnimation")
 
@@ -64,7 +65,16 @@ func HighScores():
 	get_node("/root/ScreenLoader").goto_scene("res://HighScores/highscores.scn")
 	
 func Quit():
-	get_tree().quit()
+	get_node("Dialog").show()
+	set_process_input(false)
+	get_node("Dialog").Enable()
+	get_node("Cursor").hide()
+	
+func Resume():
+	get_node("Dialog").hide()
+	set_process_input(true)
+	get_node("Dialog").Disable()
+	get_node("Cursor").show()
 
 func ShowCredits():
 	get_node("/root/ScreenLoader").goto_scene("res://Credits/credits.scn")
