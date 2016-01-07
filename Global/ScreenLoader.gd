@@ -11,7 +11,7 @@ func goto_scene(path):
 	
 func _deferred_goto_scene(path):
 	current_scene.free()
-	
+	print(path)
 	# Load new scene
 	var s = ResourceLoader.load(path)
 

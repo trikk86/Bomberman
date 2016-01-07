@@ -11,4 +11,4 @@ func StartProcessing():
 func _input(event):
 	if(event.type == InputEvent.KEY || event.type == InputEvent.MOUSE_BUTTON):
 		get_node("AnimationPlayer").stop(true)
-		get_node("/root/ScreenLoader").goto_scene("res://EndGame/endgame.scn")
+		get_node("/root/ScreenLoader").goto_scene("res://Endgame/endgame.scn")

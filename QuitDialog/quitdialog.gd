@@ -17,7 +17,7 @@ func _input(event):
 			
 	get_node("Cursor").set_pos(cursorPosition)
 
-	if(event.type == InputEvent.KEY && event.scancode == KEY_SPACE && !event.is_pressed() && !event.is_echo()):
+	if(event.type == InputEvent.KEY && (event.scancode == KEY_SPACE or event.scancode == KEY_RETURN) && !event.is_pressed() && !event.is_echo()):
 		if(selected == "left"):
 			get_tree().quit()
 		else:

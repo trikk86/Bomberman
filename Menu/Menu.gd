@@ -44,7 +44,7 @@ func _input(event):
 			
 	cursor.set_pos(cursorPosition)
 
-	if(event.type == InputEvent.KEY && event.scancode == KEY_SPACE && !event.is_pressed() && !event.is_echo()):
+	if(event.type == InputEvent.KEY && (event.scancode == KEY_SPACE or event.scancode == KEY_RETURN) && !event.is_pressed() && !event.is_echo()):
 		buttons[selectedbuttonIndex].emit_signal("pressed")
 
 func StartProcessing():

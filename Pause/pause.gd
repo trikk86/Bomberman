@@ -28,7 +28,6 @@ func _ready():
 	set_process_input(true)
 	
 func _input(event):
-
 	if(is_visible()):
 		var cursorPosition = cursor.get_pos()
 	
@@ -45,7 +44,7 @@ func _input(event):
 				get_node("SamplePlayer").play("click")
 				
 		cursor.set_pos(cursorPosition)
-		if(event.type == InputEvent.KEY && event.scancode == KEY_SPACE && !event.is_pressed() && !event.is_echo()):
+		if(event.type == InputEvent.KEY && (event.scancode == KEY_SPACE or event.scancode == KEY_RETURN) && !event.is_pressed() && !event.is_echo()):
 			buttons[selectedbuttonIndex].emit_signal("pressed")
 			
 		if(event.type == InputEvent.KEY && event.scancode == KEY_ESCAPE && !event.is_pressed() && !event.is_echo()):
